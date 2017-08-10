@@ -29,6 +29,11 @@ void GRAPHinsertArc( Graph G, vertex v, vertex w) {
     G->A++;
 }
 
+void UGRAPHinsertArc( Graph G, vertex v, vertex w) {
+    GRAPHinsertArc (G, v, w);
+    GRAPHinsertArc (G, w, v);
+}
+
 void GRAPHremoveArc( Graph G, vertex v, vertex w) { 
     link a, *ant;
     for (ant = &G->adj[v], a = G->adj[v]; a != NULL; ant = &a, a = a->next)

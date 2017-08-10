@@ -23,10 +23,13 @@ Graph GRAPHinit( int V) {
 /* REPRESENTAÇÃO POR MATRIZ DE ADJACÊNCIAS: A função GRAPHinsertArc() insere um arco v-w no grafo G. A função supõe que v e w são distintos, positivos e menores que G->V. Se o grafo já tem um arco v-w, a função não faz nada. */
 
 void GRAPHinsertArc( Graph G, vertex v, vertex w) { 
-    if (G->adj[v][w] == 0) {
-        G->adj[v][w] = 1; 
-        G->A++;
-    }
+    G->A += 1 - G->adj[v][w];
+    G->adj[v][w] = 1; 
+}
+
+void UGRAPHinsertArc( Graph G, vertex v, vertex w) {
+    G->A += ((v == w) ? 1 - G->adj[v][w] : 2 - G->adj[v][w] - G->adj[w][v]);
+    G->adj[v][w] = G->adj[w][v] = 1;
 }
 /* REPRESENTAÇÃO POR MATRIZ DE ADJACÊNCIAS: A função GRAPHremoveArc() remove do grafo G o arco v-w. A função supõe que v e w são distintos, positivos e menores que G->V. Se não existe arco v-w, a função não faz nada. */
 
