@@ -1,8 +1,10 @@
+/* Nome: Ângelo Gregório Lovatto */
+/* NUSP: 9293435 */
 #include "GRAPHmatrix.h"
 
 int main (int argc, char **argv) {
     FILE * pidigits = fopen ("pidigits.txt", "r");
-    int i, n;
+    int i, n, err = 0;
     char curr, prev;
     Graph G;
 
@@ -11,18 +13,15 @@ int main (int argc, char **argv) {
         fprintf (stderr, "error: no number of digits of pi specified\n");
         return 1;
     }
-    /* printf ("Insert number of digits of pi: "); */
-    /* scanf (" %d", &n); */
     G = GRAPHinit (10);
 
-    printf ("%d\n", n);
-    fscanf (pidigits, "%c", &prev);
+    err |= fscanf (pidigits, "%c", &prev);
     for (i = 1; i < n; i++) {
-        fscanf (pidigits, "%c", &curr);
+        err |= fscanf (pidigits, "%c", &curr);
         GRAPHinsertArc (G, prev - '0', curr - '0');
         prev = curr;
-        printf ("%d\n%d\n", i + 1, G->A);
     }
 
+    GRAPHshow (G);
     return 0;
 }
