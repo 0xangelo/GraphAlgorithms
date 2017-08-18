@@ -14,9 +14,3 @@ bin/%Matrix.out: %Matrix.c GRAPHmatrix.c GRAPHmatrix.h
 
 bin/%Lists.out: %Lists.c GRAPHlists.c GRAPHlists.h
 	${CC} -o $@ $^ ${CFLAGS}
-
-TesteMatriz: TesteMatriz.c GRAPHmatrix.c GRAPHmatrix.h
-	${CC} -o $@ $^ ${CFLAGS}
-
-TesteListas: TesteListas.c GRAPHlists.c GRAPHlists.h
-	${CC} -o $@ $^ ${CFLAGS}
