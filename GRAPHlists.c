@@ -1,6 +1,6 @@
 #include "GRAPHlists.h"
 
-static int cnt;
+static int cnt1, cnt2;
 
 /* A função NEWnode() recebe um vértice w e o endereço next de um nó e devolve o
    endereço a de um novo nó tal que a->w == w e a->next == next. */
@@ -22,6 +22,8 @@ Graph GRAPHinit( int V) {
     for (v = 0; v < V; ++v) 
         G->adj[v] = NULL;
     G->pre = malloc( V * sizeof v);
+    G->post = malloc( V * sizeof v);
+    G->parent = malloc( V * sizeof v);
     return G;
 }
 
@@ -148,51 +150,51 @@ Graph UGRAPHknight() {
 }
 
 Graph GRAPHbuildComplete( int V) {
-   Graph G;
-   vertex v, w;
-   G = GRAPHinit( V);
-   for (v = 0; v < G->V; ++v)
-       for (w = v + 1; w < G->V; ++w) {
-          GRAPHinsertArc( G, v, w);
-          GRAPHinsertArc( G, w, v);
-       }
-   return G;
+    Graph G;
+    vertex v, w;
+    G = GRAPHinit( V);
+    for (v = 0; v < G->V; ++v)
+        for (w = v + 1; w < G->V; ++w) {
+            GRAPHinsertArc( G, v, w);
+            GRAPHinsertArc( G, w, v);
+        }
+    return G;
 }
 
 /* A função randV() devolve um vértice aleatório do grafo G. */
 vertex randV( Graph G) { 
-   double r;
-   r = rand( ) / (RAND_MAX + 1.0);
-   return r * G->V;
+    double r;
+    r = rand( ) / (RAND_MAX + 1.0);
+    return r * G->V;
 }
 
 /* Essa função constrói um grafo aleatório com vértices 0..V-1 e exatamente A
    arcos. A função supõe que A <= V*(V-1). Se A for próximo de V*(V-1), a função
    pode consumir muito tempo. (Código inspirado no Programa 17.7 de Sedgewick.) */
 Graph GRAPHrand1( int V, int A) { 
-   Graph G = GRAPHinit( V);
-   while (G->A < A) {
-      vertex v = randV( G);
-      vertex w = randV( G);
-      if (v != w) 
-         GRAPHinsertArc( G, v, w);
-   }
-   return G;
+    Graph G = GRAPHinit( V);
+    while (G->A < A) {
+        vertex v = randV( G);
+        vertex w = randV( G);
+        if (v != w) 
+            GRAPHinsertArc( G, v, w);
+    }
+    return G;
 }
 
 /* Constrói um grafo aleatório com vértices 0..V-1 e número esperado de arcos
    igual a A. A função supõe que V >= 2 e A <= V*(V-1). (Código inspirado no
    Program 17.8 de Sedgewick.) */
 Graph GRAPHrand2( int V, int A) { 
-   double prob = (double) A / V / (V-1);
-   Graph G = GRAPHinit( V);
-   vertex v, w;
-   for (v = 0; v < V; ++v)
-      for (w = 0; w < V; ++w)
-         if (v != w)
-            if (rand( ) < prob*(RAND_MAX+1.0))
-               GRAPHinsertArc( G, v, w);
-   return G;
+    double prob = (double) A / V / (V-1);
+    Graph G = GRAPHinit( V);
+    vertex v, w;
+    for (v = 0; v < V; ++v)
+        for (w = 0; w < V; ++w)
+            if (v != w)
+                if (rand( ) < prob*(RAND_MAX+1.0))
+                    GRAPHinsertArc( G, v, w);
+    return G;
 }
 
 Graph GRAPHbuildRandRootedTree( int V) {
@@ -234,11 +236,14 @@ void GRAPHremoveArc( Graph G, vertex v, vertex w) {
    que G é representado por uma matriz de adjacências. (Código inspirado no 
    programa 18.1 de Sedgewick.) */
 static void dfsR( Graph G, vertex v) { 
-   link a;
-   G->pre[v] = cnt++; 
-   for (a = G->adj[v]; a != NULL; a = a->next)
-      if (G->pre[a->w] == -1)
-         dfsR( G, a->w); 
+    link a;
+    G->pre[v] = cnt1++; 
+    for (a = G->adj[v]; a != NULL; a = a->next)
+        if (G->pre[a->w] == -1) {
+            G->parent[a->w] = v;
+            dfsR( G, a->w);
+        }
+    G->post[v] = cnt2++;
 }
 
 /* A função GRAPHdfs() visita todos os vértices e todos os arcos do grafo G. 
@@ -246,13 +251,15 @@ static void dfsR( Graph G, vertex v) {
    vértice descoberto recebe número de ordem k.  (Código inspirado no 
    programa 18.3 de Sedgewick.) */
 void GRAPHdfs( Graph G) { 
-   vertex v;
-   cnt = 0;
-   for (v = 0; v < G->V; ++v) 
-      G->pre[v] = -1;
-   for (v = 0; v < G->V; ++v)
-      if (G->pre[v] == -1) 
-         dfsR( G, v);
+    vertex v;
+    cnt1 = cnt2 = 0;
+    for (v = 0; v < G->V; ++v) 
+        G->pre[v] = -1;
+    for (v = 0; v < G->V; ++v)
+        if (G->pre[v] == -1) {
+            G->parent[v] = v;
+            dfsR( G, v);
+        }
 }
 
 int GRAPHindeg( Graph G, vertex v) {
@@ -290,6 +297,32 @@ int GRAPHrootedForestHeight( Graph G, vertex *p) {
     }
     free (h); free (stack);
     return max;
+}
+
+/* A função dfsRcc() atribui o número id a todos os vértices que estão na mesma 
+   componente conexa que v. A função supõe que o grafo é representado por listas 
+   de adjacência. */
+static void dfsRcc( UGraph G, int *cc, vertex v, int id) { 
+    link a; 
+    cc[v] = id;
+    for (a = G->adj[v]; a != NULL; a = a->next)
+        if (cc[a->w] == -1) 
+            dfsRcc( G, cc, a->w, id); 
+}
+
+/* A função UGRAPHcc() devolve o número de componentes conexas do grafo 
+   não-dirigido G. Além disso, armazena no vetor cc[] uma numeração dos 
+   vértices tal que dois vértices v e w pertencem à mesma componente se 
+   e somente se cc[v] == cc[w]. (O código foi copiado do programa 18.4 
+   de Sedgewick.) */
+int UGRAPHcc( UGraph G, int *cc) { 
+    vertex v; int id = 0;
+    for (v = 0; v < G->V; ++v) 
+        cc[v] = -1;
+    for (v = 0; v < G->V; ++v)
+        if (cc[v] == -1) 
+            dfsRcc( G, cc, v, id++);
+    return id;
 }
 
 bool GRAPHisUndirected( Graph G) {
@@ -373,6 +406,37 @@ bool GRAPHreach( Graph G, vertex s, vertex t) {
     return v == t;
 }
 
+/* A função cycleR() devolve TRUE se encontra um ciclo ao percorrer G a partir 
+   do vértice v e devolve FALSE em caso contrário. */
+static bool cycleR( Graph G, vertex v) { 
+    link a;
+    G->pre[v] = cnt1++;
+    for (a = G->adj[v]; a != NULL; a = a->next) {
+        vertex w = a->w;
+        if (G->pre[w] == -1) {
+            if (cycleR( G, w)) 
+                return true;
+        } else {
+            if (G->post[w] == -1) /* A */
+                return true;   /* v-w é de retorno */
+            /* B */
+        }
+    }
+    G->post[v] = cnt2++;
+    return false;
+}
+
+bool GRAPHhasCycle( Graph G) {
+    vertex v;
+    cnt1 = cnt2 = 0;
+    for (v = 0; v < G->V; ++v)
+        G->pre[v] = G->post[v] = -1;
+    for (v = 0; v < G->V; ++v)
+        if (G->pre[v] == -1)
+            if (cycleR( G, v)) return true;
+    return false;
+}
+
 void GRAPHshow( Graph G) { 
     vertex v;
     link a;
@@ -399,3 +463,18 @@ void UGRAPHshowKnight( Graph G, int i, int j) {
     }
 }
 
+void GRAPHfree( Graph G) {
+    vertex v;
+    link a, b;
+    for (v = 0; v < G->V; ++v) {
+        a = G->adj[v];
+        while (a != NULL) {
+            b = a->next;
+            free (a);
+            a = b;
+        }
+    }
+    free (G->adj);
+    free (G->pre);
+    free (G);
+}

@@ -2,8 +2,12 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <ctype.h>
+
 /* Vértices de grafos são representados por objetos do tipo vertex. */
 #define vertex int
+/* O tipo UGraph é apenas um sinônimo de Graph, mas deixa claro para o leitor 
+   humano que o grafo é não-dirigido. */
+#define UGraph Graph
 
 /* A lista de adjacência de um vértice v é composta por nós do tipo node.
    Cada nó da lista corresponde a um arco e contém um vizinho w de v e o
@@ -22,6 +26,8 @@ struct graph {
     int A; 
     link *adj;
     int *pre;
+    int *post;
+    int *parent;
 };
 
 /* Um Graph é um ponteiro para um graph. */
@@ -45,12 +51,16 @@ void GRAPHdfs( Graph G);
 int GRAPHindeg( Graph G, vertex v);
 int GRAPHoutdeg( Graph G, vertex v);
 int GRAPHrootedForestHeight( Graph G, vertex *p);
+int UGRAPHcc( UGraph G, int *cc);
 bool GRAPHisUndirected( Graph G);
 bool GRAPHisolated( Graph G, vertex v);
 bool GRAPHadj( Graph G, vertex v, vertex w);
 bool GRAPHisTopoNumbering( Graph G, int *topo);
 bool GRAPHisTopoOrder( Graph G, vertex *vv);
 bool GRAPHreach( Graph G, vertex s, vertex t);
+bool GRAPHhasCycle( Graph G);
 
 void GRAPHshow( Graph G); 
 void UGRAPHshowKnight( Graph G, int i, int j);
+
+void GRAPHfree( Graph G);
