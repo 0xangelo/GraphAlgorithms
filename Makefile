@@ -17,5 +17,5 @@ $(OBJDIR)/%Matrix.out: %Matrix.c GRAPHmatrix.c GRAPHmatrix.h prompt.c prompt.h
 %L: $(OBJDIR)/%Lists.out | $(OBJDIR)
 	./$<
 
-$(OBJDIR)/%Lists.out: %Lists.c GRAPHlists.c GRAPHlists.h
+$(OBJDIR)/%Lists.out: %Lists.c GRAPHlists.c GRAPHlists.h prompt.c prompt.h
 	${CC} -o $@ $^ ${CFLAGS}
