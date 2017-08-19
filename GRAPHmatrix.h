@@ -26,34 +26,34 @@ struct graph {
    endereço de um graph. */
 typedef struct graph *Graph;
 
-Graph GRAPHinit( int V); 
-Graph GRAPHinputArcs( void);
-Graph GRAPHinputLists( void);
-Graph GRAPHinputArcsFile( FILE *in);
-Graph GRAPHinputListsFile( FILE *in);
+Graph GRAPHinit (int V); 
+Graph GRAPHinputArcs (void);
+Graph GRAPHinputLists (void);
+Graph GRAPHinputArcsFile (FILE *in);
+Graph GRAPHinputListsFile (FILE *in);
 Graph UGRAPHknight();
-Graph GRAPHbuildComplete( int V);
-Graph GRAPHrand1( int V, int A);
-Graph GRAPHrand2( int V, int A);
+Graph GRAPHbuildComplete (int V);
+Graph GRAPHrand1 (int V, int A);
+Graph GRAPHrand2 (int V, int A);
 
-void GRAPHinsertArc( Graph G, vertex v, vertex w); 
-void UGRAPHinsertArc( Graph G, vertex v, vertex w);
-void GRAPHremoveArc( Graph G, vertex v, vertex w); 
-void GRAPHdfs( Graph G);
+void GRAPHinsertArc (Graph G, vertex v, vertex w); 
+void UGRAPHinsertArc (Graph G, vertex v, vertex w);
+void GRAPHremoveArc (Graph G, vertex v, vertex w); 
+void GRAPHdfs (Graph G);
 
-int GRAPHindeg( Graph G, vertex v);
-int GRAPHoutdeg( Graph G, vertex v);
-int GRAPHrootedForestHeight( Graph G, vertex *p);
-int UGRAPHcc( UGraph G, int *cc);
-bool GRAPHisUndirected( Graph G);
-bool GRAPHisolated( Graph G, vertex v);
-bool GRAPHadj( Graph G, vertex v, vertex w);
-bool GRAPHisTopoNumbering( Graph G, int *topo);
-bool GRAPHisTopoOrder( Graph G, vertex *vv);
-bool GRAPHreach( Graph G, vertex s, vertex t);
-bool GRAPHhasCycle( Graph G);
+int GRAPHindeg (Graph G, vertex v);
+int GRAPHoutdeg (Graph G, vertex v);
+int GRAPHrootedForestHeight (Graph G, vertex *p);
+int UGRAPHcc (UGraph G, int *cc);
+bool GRAPHisUndirected (Graph G);
+bool GRAPHisolated (Graph G, vertex v);
+bool GRAPHadj (Graph G, vertex v, vertex w);
+bool GRAPHisTopoNumbering (Graph G, int *topo);
+bool GRAPHisTopoOrder (Graph G, vertex *vv);
+bool GRAPHreach (Graph G, vertex s, vertex t);
+bool GRAPHhasCycle (Graph G);
 
-void GRAPHshow( Graph G); 
-void UGRAPHshowKnight( Graph G, int i, int j);
+void GRAPHshow (Graph G); 
+void UGRAPHshowKnight (Graph G, int i, int j);
 
-void GRAPHfree( Graph G);
+void GRAPHfree (Graph G);
