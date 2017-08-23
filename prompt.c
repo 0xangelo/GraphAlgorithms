@@ -18,6 +18,7 @@ char *func_names[] = {
     "outdeg",
     "rootedForestHeight",
     "cc",
+    "scT",
     "isUndirected",
     "isolated",
     "adj",

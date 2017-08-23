@@ -28,6 +28,7 @@ struct graph {
     int *pre;
     int *post;
     int *parent;
+    int *low;
 };
 
 /* Um Graph é um ponteiro para um graph. */
@@ -38,7 +39,7 @@ Graph GRAPHinputArcs (void);
 Graph GRAPHinputLists (void);
 Graph GRAPHinputArcsFile (FILE *in);
 Graph GRAPHinputListsFile (FILE *in);
-Graph UGRAPHknight();
+Graph UGRAPHknight (void);
 Graph GRAPHbuildComplete (int V);
 Graph GRAPHrand1 (int V, int A);
 Graph GRAPHrand2 (int V, int A);
@@ -52,6 +53,7 @@ int GRAPHindeg (Graph G, vertex v);
 int GRAPHoutdeg (Graph G, vertex v);
 int GRAPHrootedForestHeight (Graph G, vertex *p);
 int UGRAPHcc (UGraph G, int *cc);
+int GRAPHscT (Graph G, int *sc);
 bool GRAPHisUndirected (Graph G);
 bool GRAPHisolated (Graph G, vertex v);
 bool GRAPHadj (Graph G, vertex v, vertex w);

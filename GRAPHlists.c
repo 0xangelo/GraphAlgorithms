@@ -1,9 +1,7 @@
 #include "GRAPHlists.h"
 
 static int cnt1, cnt2;
-static int *pre, *low;
 static vertex *stack;
-static int cnt;
 static int k, N;
 
 /* A função NEWnode() recebe um vértice w e o endereço next de um nó e devolve o
@@ -28,6 +26,7 @@ Graph GRAPHinit (int V) {
     G->pre = malloc (V * sizeof v);
     G->post = malloc (V * sizeof v);
     G->parent = malloc (V * sizeof v);
+    G->low = malloc (V * sizeof v);
     return G;
 }
 
@@ -331,23 +330,23 @@ int UGRAPHcc (UGraph G, int *cc) {
 
 /* O código de strongR() foi adaptado da figura 5.15 do livro de Aho,
    Hopcroft e Ullman. */
-static void strongR( Graph G, vertex v, int *sc) { 
+static void strongR (Graph G, vertex v, int *sc) { 
    vertex w, u; link a; int min;
-   pre[v] = cnt++;
-   min = pre[v]; 
+   G->pre[v] = cnt1++;
+   min = G->pre[v]; 
    stack[N++] = v;
    for (a = G->adj[v]; a != NULL; a = a->next) {
       w = a->w;
-      if (pre[w] == -1) {
-         strongR( G, w, sc);
-         if (low[w] < min) min = low[w]; /*A*/
+      if (G->pre[w] == -1) {
+         strongR (G, w, sc);
+         if (G->low[w] < min) min = G->low[w]; /*A*/
       }
-      else if (pre[w] < pre[v] && sc[w] == -1) {
-         if (pre[w] < min) min = pre[w]; /*B*/
+      else if (G->pre[w] < G->pre[v] && sc[w] == -1) {
+         if (G->pre[w] < min) min = G->pre[w]; /*B*/
       }
    }
-   low[v] = min;
-   if (low[v] == pre[v]) {               /*C*/
+   G->low[v] = min;
+   if (G->low[v] == G->pre[v]) {               /*C*/
       do {
          u = stack[--N];
          sc[u] = k;
@@ -361,20 +360,18 @@ static void strongR( Graph G, vertex v, int *sc) {
    fortes de G: para cada vértice u, sc[u] será o nome da componente forte que 
    contém u. Os nomes das componentes fortes são 0, 1, 2, etc. (A função 
    implementa o algoritmo de Tarjan.) */
-int GRAPHscT( Graph G, int *sc) {
+int GRAPHscT (Graph G, int *sc) {
    vertex v; 
-   pre = malloc( G->V * sizeof (int));
-   low = malloc( G->V * sizeof (int));
-   stack = malloc( G->V * sizeof (vertex));
+   stack = malloc (G->V * sizeof (vertex));
    for (v = 0; v < G->V; ++v) 
-      pre[v] = sc[v] = -1;
+      G->pre[v] = sc[v] = -1;
 
-   k = N = cnt = 0;
+   k = N = cnt1 = 0;
    for (v = 0; v < G->V; ++v) 
-      if (pre[v] == -1)
-         strongR( G, v, sc);
+      if (G->pre[v] == -1)
+         strongR (G, v, sc);
    
-   free( pre); free( low); free( stack);
+   free (stack);
    return k;
 }
 
@@ -427,33 +424,34 @@ bool GRAPHisTopoOrder (Graph G, vertex *vv) {
 }
 
 bool GRAPHreach (Graph G, vertex s, vertex t) {
-    vertex v, *stack, top = 0;
-    link a, *next;
+    vertex v; link a, *next;
     bool *visit;
     visit = malloc (G->V * sizeof (bool));
     stack = malloc (G->V * sizeof v);
     next = malloc (G->V * sizeof a);
 
+    N = 0;
     for (v = 0; v < G->V; ++v) visit[v] = false;
-    stack[top] = s;
-    next[top] = G->adj[s];
-    while (top >= 0) {
-        v = stack[top];
-        a = next[top];
+    stack[N] = s;
+    next[N] = G->adj[s];
+
+    while (N >= 0) {
+        v = stack[N];
+        a = next[N];
         visit[v] = true;
         if (v == t) break;
 
         while (a != NULL) {
             if (!visit[a->w]) {
-                stack[top + 1] = a->w;
-                next[top + 1] = G->adj[a->w];
+                stack[N + 1] = a->w;
+                next[N + 1] = G->adj[a->w];
                 break;
             }
             a = a->next;
         }
-        next[top] = a;
-        if (a == NULL) top--;
-        else top++;
+        next[N] = a;
+        if (a == NULL) N--;
+        else N++;
     }
     free (visit); free (stack); free (next);
     return v == t;

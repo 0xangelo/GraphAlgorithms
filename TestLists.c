@@ -139,13 +139,13 @@ int main () {
             printf ("void GRAPHdfs (Graph G)\n");
             GRAPHdfs (G);
             printf ("v       ");
-            for (v = 0; v < G->V; ++v) printf ("%d ", v);
+            for (v = 0; v < G->V; ++v) printf ("%2d ", v);
             printf ("\npre     ");
-            for (v = 0; v < G->V; ++v) printf ("%d ", G->pre[v]);
+            for (v = 0; v < G->V; ++v) printf ("%2d ", G->pre[v]);
             printf ("\npost    ");
-            for (v = 0; v < G->V; ++v) printf ("%d ", G->post[v]);
+            for (v = 0; v < G->V; ++v) printf ("%2d ", G->post[v]);
             printf ("\nparent  ");
-            for (v = 0; v < G->V; ++v) printf ("%d ", G->parent[v]);
+            for (v = 0; v < G->V; ++v) printf ("%2d ", G->parent[v]);
             printf ("\n");
             break;
 
@@ -180,32 +180,45 @@ int main () {
         case 17:
             printf ("int UGRAPHcc (UGraph G, int *cc)\n");
             arr = malloc (G->V * sizeof (int));
-            printf ("components: %d", UGRAPHcc (G, arr));
+            printf ("components: %2d", UGRAPHcc (G, arr));
             printf ("\nv           ");
-            for (i = 0; i < G->V; ++i) printf ("%d ", i);
+            for (i = 0; i < G->V; ++i) printf ("%2d ", i);
             printf ("\ncc          ");
-            for (i = 0; i < G->V; ++i) printf ("%d ", arr[i]);
+            for (i = 0; i < G->V; ++i) printf ("%2d ", arr[i]);
             printf ("\n");
+            free (arr);
             break;
 
         case 18:
+            printf ("int GRAPHscT (Graph G, int *sc)\n");
+            arr = malloc (G->V * sizeof (int));
+            printf ("components: %2d", GRAPHscT (G, arr));
+            printf ("\nv           ");
+            for (i = 0; i < G->V; ++i) printf ("%2d ", i);
+            printf ("\nsc          ");
+            for (i = 0; i < G->V; ++i) printf ("%2d ", arr[i]);
+            printf ("\n");
+            free (arr);
+            break;
+
+        case 19:
             printf ("bool GRAPHisUndirected (Graph G)\n");
             printf (GRAPHisUndirected (G) ? "Yes\n" : "No\n");
             break;
 
-        case 19:
+        case 20:
             printf ("bool GRAPHisolated (Graph G, vertex v)\n");
             error |= scanf (" %d", &v);
             printf (GRAPHisolated (G, v) ? "Yes\n" : "No\n");
             break;
 
-        case 20:
+        case 21:
             printf ("bool GRAPHadj (Graph G, vertex v, vertex w)\n");
             error |= scanf (" %d %d", &v, &w);
             printf (GRAPHadj (G, v, w) ? "Yes\n" : "No\n");
             break;
 
-        case 21:
+        case 22:
             printf ("bool GRAPHisTopoNumbering (Graph G, int *topo)\n");
             arr = malloc (G->V * sizeof (int));
             for (i = 0; i < G->V; ++i) error |= scanf (" %d", &arr[i]);
@@ -213,35 +226,35 @@ int main () {
             free (arr);
             break;
 
-        case 22:
+        case 23:
             printf ("bool GRAPHisTopoOrder (Graph G, vertex *vv)\n");
             arr = malloc (G->V * sizeof (int));
             free (arr);
             break;
 
-        case 23:
+        case 24:
             printf ("bool GRAPHreach (Graph G, vertex s, vertex t)\n");
             error |= scanf (" %d %d", &v, &w);
             printf (GRAPHreach (G, v, w) ? "Yes\n" : "No\n");
             break;
 
-        case 24:
+        case 25:
             printf ("bool GRAPHhasCycle (Graph G)\n");
             printf (GRAPHhasCycle (G) ? "Yes\n" : "No\n");
             break;
 
-        case 25:
+        case 26:
             printf ("void GRAPHshow (Graph G)\n");
             GRAPHshow (G);
             break;
 
-        case 26:
+        case 27:
             printf ("void UGRAPHshowKnight (Graph G, int i, int j)\n");
             error |= scanf (" %d %d", &v, &w);
             UGRAPHshowKnight (G, v, w);
             break;
 
-        case 27:
+        case 28:
             jump = true;
         }
     }

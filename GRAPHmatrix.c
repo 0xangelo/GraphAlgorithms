@@ -1,6 +1,8 @@
 #include "GRAPHmatrix.h"
 
 static int cnt1, cnt2;
+static vertex *stack;
+static int k, N;
 
 /* REPRESENTAÇÃO POR MATRIZ DE ADJACÊNCIAS: A função MATRIXint() aloca uma matriz
    com linhas 0..r-1 e colunas 0..c-1. Cada elemento da matriz recebe valor val. */
@@ -25,6 +27,7 @@ Graph GRAPHinit (int V) {
     G->pre = malloc (V * sizeof (int));
     G->post = malloc (V * sizeof (int));
     G->parent = malloc (V * sizeof (int));
+    G->low = malloc (V * sizeof (int));
     return G;
 }
 
@@ -319,6 +322,52 @@ int UGRAPHcc (UGraph G, int *cc) {
     return id;
 }
 
+/* O código de strongR() foi adaptado da figura 5.15 do livro de Aho,
+   Hopcroft e Ullman. */
+static void strongR (Graph G, vertex v, int *sc) { 
+   vertex w, u; int min;
+   G->pre[v] = cnt1++;
+   min = G->pre[v]; 
+   stack[N++] = v;
+   for (w = 0; w < G->V; ++w) {
+      if (G->pre[w] == -1) {
+         strongR (G, w, sc);
+         if (G->low[w] < min) min = G->low[w]; /*A*/
+      }
+      else if (G->pre[w] < G->pre[v] && sc[w] == -1) {
+         if (G->pre[w] < min) min = G->pre[w]; /*B*/
+      }
+   }
+   G->low[v] = min;
+   if (G->low[v] == G->pre[v]) {               /*C*/
+      do {
+         u = stack[--N];
+         sc[u] = k;
+      } while (u != v);
+      k++;
+   }
+}
+
+/* A função GRAPHscT() devolve o número de componentes fortes do grafo G e 
+   armazena no vetor sc[], indexado pelo vértices de G, os nomes das componentes
+   fortes de G: para cada vértice u, sc[u] será o nome da componente forte que 
+   contém u. Os nomes das componentes fortes são 0, 1, 2, etc. (A função 
+   implementa o algoritmo de Tarjan.) */
+int GRAPHscT (Graph G, int *sc) {
+   vertex v; 
+   stack = malloc (G->V * sizeof (vertex));
+   for (v = 0; v < G->V; ++v) 
+      G->pre[v] = sc[v] = -1;
+
+   k = N = cnt1 = 0;
+   for (v = 0; v < G->V; ++v) 
+      if (G->pre[v] == -1)
+         strongR (G, v, sc);
+   
+   free (stack);
+   return k;
+}
+
 bool GRAPHisUndirected (Graph G) {
     int i, j;
     for (i = 0; i < G->V; ++i)
@@ -359,33 +408,34 @@ bool GRAPHisTopoOrder (Graph G, vertex *vv) {
 }
 
 bool GRAPHreach (Graph G, vertex s, vertex t) {
-    vertex v, w, *stack, *next, top = 0;
+    vertex v, w, *next;
     bool *visit;
     visit = malloc (G->V * sizeof (bool));
     stack = malloc (G->V * sizeof v);
     next = malloc (G->V * sizeof v);
 
+    N = 0;
     for (v = 0; v < G->V; ++v) visit[v] = false;
-    stack[top] = s;
-    next[top] = 0;
+    stack[N] = s;
+    next[N] = 0;
 
-    while (top >= 0) {
-        v = stack[top];
-        w = next[top];
+    while (N >= 0) {
+        v = stack[N];
+        w = next[N];
         visit[v] = true;
         if (v == t) break;
 
         while (w < G->V) {
             if (G->adj[v][w] && !visit[w]) {
-                stack[top + 1] = w;
-                next[top + 1] = 0;
+                stack[N + 1] = w;
+                next[N + 1] = 0;
                 break;
             }
             w++;
         }
-        next[top] = w;
-        if (w == G->V) top--;
-        else top++;
+        next[N] = w;
+        if (w == G->V) N--;
+        else N++;
     }
     free (visit); free (stack); free (next);
     return v == t;

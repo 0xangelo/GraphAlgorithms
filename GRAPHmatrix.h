@@ -20,6 +20,7 @@ struct graph {
     int *pre;
     int *post;
     int *parent;
+    int *low;
 };
 
 /* Um Graph é um ponteiro para um graph, ou seja, um Graph contém o
@@ -45,6 +46,7 @@ int GRAPHindeg (Graph G, vertex v);
 int GRAPHoutdeg (Graph G, vertex v);
 int GRAPHrootedForestHeight (Graph G, vertex *p);
 int UGRAPHcc (UGraph G, int *cc);
+int GRAPHscT (Graph G, int *sc);
 bool GRAPHisUndirected (Graph G);
 bool GRAPHisolated (Graph G, vertex v);
 bool GRAPHadj (Graph G, vertex v, vertex w);
