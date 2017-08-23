@@ -330,11 +330,11 @@ static void strongR (Graph G, vertex v, int *sc) {
    min = G->pre[v]; 
    stack[N++] = v;
    for (w = 0; w < G->V; ++w) {
-      if (G->pre[w] == -1) {
+      if (G->adj[v][w] && G->pre[w] == -1) {
          strongR (G, w, sc);
          if (G->low[w] < min) min = G->low[w]; /*A*/
       }
-      else if (G->pre[w] < G->pre[v] && sc[w] == -1) {
+      else if (G->adj[v][w] && G->pre[w] < G->pre[v] && sc[w] == -1) {
          if (G->pre[w] < min) min = G->pre[w]; /*B*/
       }
    }
