@@ -1,6 +1,10 @@
 #include "GRAPHlists.h"
 
 static int cnt1, cnt2;
+static int *pre, *low;
+static vertex *stack;
+static int cnt;
+static int k, N;
 
 /* A função NEWnode() recebe um vértice w e o endereço next de um nó e devolve o
    endereço a de um novo nó tal que a->w == w e a->next == next. */
@@ -323,6 +327,55 @@ int UGRAPHcc (UGraph G, int *cc) {
         if (cc[v] == -1) 
             dfsRcc (G, cc, v, id++);
     return id;
+}
+
+/* O código de strongR() foi adaptado da figura 5.15 do livro de Aho,
+   Hopcroft e Ullman. */
+static void strongR( Graph G, vertex v, int *sc) { 
+   vertex w, u; link a; int min;
+   pre[v] = cnt++;
+   min = pre[v]; 
+   stack[N++] = v;
+   for (a = G->adj[v]; a != NULL; a = a->next) {
+      w = a->w;
+      if (pre[w] == -1) {
+         strongR( G, w, sc);
+         if (low[w] < min) min = low[w]; /*A*/
+      }
+      else if (pre[w] < pre[v] && sc[w] == -1) {
+         if (pre[w] < min) min = pre[w]; /*B*/
+      }
+   }
+   low[v] = min;
+   if (low[v] == pre[v]) {               /*C*/
+      do {
+         u = stack[--N];
+         sc[u] = k;
+      } while (u != v);
+      k++;
+   }
+}
+
+/* A função GRAPHscT() devolve o número de componentes fortes do grafo G e 
+   armazena no vetor sc[], indexado pelo vértices de G, os nomes das componentes
+   fortes de G: para cada vértice u, sc[u] será o nome da componente forte que 
+   contém u. Os nomes das componentes fortes são 0, 1, 2, etc. (A função 
+   implementa o algoritmo de Tarjan.) */
+int GRAPHscT( Graph G, int *sc) {
+   vertex v; 
+   pre = malloc( G->V * sizeof (int));
+   low = malloc( G->V * sizeof (int));
+   stack = malloc( G->V * sizeof (vertex));
+   for (v = 0; v < G->V; ++v) 
+      pre[v] = sc[v] = -1;
+
+   k = N = cnt = 0;
+   for (v = 0; v < G->V; ++v) 
+      if (pre[v] == -1)
+         strongR( G, v, sc);
+   
+   free( pre); free( low); free( stack);
+   return k;
 }
 
 bool GRAPHisUndirected (Graph G) {
