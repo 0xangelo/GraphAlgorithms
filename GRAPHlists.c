@@ -265,6 +265,13 @@ void GRAPHdfs (Graph G) {
         }
 }
 
+void GRAPHtopoOrder (Graph G, int *vv) {
+    vertex v;
+    GRAPHdfs (G);
+    for (v = 0; v < G->V; ++v)
+        vv[G->V - 1 - G->post[v]] = v;
+}
+
 int GRAPHindeg (Graph G, vertex v) {
     int i, ans = 0;
     link a;

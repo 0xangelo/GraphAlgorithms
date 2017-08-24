@@ -32,7 +32,7 @@ Graph GRAPHinputArcs (void);
 Graph GRAPHinputLists (void);
 Graph GRAPHinputArcsFile (FILE *in);
 Graph GRAPHinputListsFile (FILE *in);
-Graph UGRAPHknight();
+Graph UGRAPHknight (void);
 Graph GRAPHbuildComplete (int V);
 Graph GRAPHrand1 (int V, int A);
 Graph GRAPHrand2 (int V, int A);
@@ -41,6 +41,7 @@ void GRAPHinsertArc (Graph G, vertex v, vertex w);
 void UGRAPHinsertArc (Graph G, vertex v, vertex w);
 void GRAPHremoveArc (Graph G, vertex v, vertex w); 
 void GRAPHdfs (Graph G);
+void GRAPHtopoOrder (Graph G, int *vv);
 
 int GRAPHindeg (Graph G, vertex v);
 int GRAPHoutdeg (Graph G, vertex v);

@@ -48,6 +48,7 @@ void GRAPHinsertArc (Graph G, vertex v, vertex w);
 void UGRAPHinsertArc (Graph G, vertex v, vertex w);
 void GRAPHremoveArc (Graph G, vertex v, vertex w); 
 void GRAPHdfs (Graph G);
+void GRAPHtopoOrder (Graph G, int *vv);
 
 int GRAPHindeg (Graph G, vertex v);
 int GRAPHoutdeg (Graph G, vertex v);
