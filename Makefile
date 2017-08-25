@@ -1,21 +1,21 @@
-CFLAGS= -Wall -std=c99 -ansi -pedantic -O2 -lreadline
+CFLAGS= -Wall -std=c99 -ansi -pedantic -O2 -lreadline -L./lib/ -lprompt
 CC= gcc
 
 OBJDIR := bin
 
-.PRECIOUS: bin/%Matrix.out bin/%Lists.out
+.PRECIOUS: bin/%M.out bin/%L.out
 
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
-%M: $(OBJDIR)/%Matrix.out | $(OBJDIR)
+%M: $(OBJDIR)/%M.out | $(OBJDIR)
 	./$<
 
-$(OBJDIR)/%Matrix.out: %Matrix.c GRAPHmatrix.c GRAPHmatrix.h prompt.c prompt.h
-	${CC} -o $@ $^ ${CFLAGS}
+$(OBJDIR)/%M.out: %.c
+	${CC} -o $@ $^ ${CFLAGS} -D GRAPHM -lgraphm
 
-%L: $(OBJDIR)/%Lists.out | $(OBJDIR)
+%L: $(OBJDIR)/%L.out | $(OBJDIR)
 	./$<
 
-$(OBJDIR)/%Lists.out: %Lists.c GRAPHlists.c GRAPHlists.h prompt.c prompt.h
-	${CC} -o $@ $^ ${CFLAGS}
+$(OBJDIR)/%L.out: %.c
+	${CC} -o $@ $^ ${CFLAGS} -D GRAPHL -lgraphl
