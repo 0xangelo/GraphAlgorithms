@@ -1,5 +1,8 @@
 default:
-	gcc -Wall -c *.c
-	ar -cvq graphm.a graphm.o
-	ar -cvq graphl.a graphl.o
-	ar -cvq prompt.a prompt.o
+	gcc -c *.c -Wall -std=c99 -ansi -pedantic
+	ar -cvq libgraphm.a graphm.o
+	ar -cvq libgraphl.a graphl.o
+	ar -cvq libprompt.a prompt.o
+	ranlib libgraphm.a
+	ranlib libgraphl.a
+	ranlib libprompt.a

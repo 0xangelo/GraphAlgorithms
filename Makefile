@@ -1,4 +1,4 @@
-CFLAGS= -Wall -std=c99 -ansi -pedantic -O2 -lreadline -L./lib/ -lprompt
+CFLAGS= -Wall -std=c99 -ansi -pedantic -O2 -iquote lib/ -L./lib/ -lprompt -lreadline
 CC= gcc
 
 OBJDIR := bin
@@ -12,10 +12,10 @@ $(OBJDIR):
 	./$<
 
 $(OBJDIR)/%M.out: %.c
-	${CC} -o $@ $^ ${CFLAGS} -D GRAPHM -lgraphm
+	${CC} -o $@ $^ -D GRAPHM ${CFLAGS} -lgraphm
 
 %L: $(OBJDIR)/%L.out | $(OBJDIR)
 	./$<
 
 $(OBJDIR)/%L.out: %.c
-	${CC} -o $@ $^ ${CFLAGS} -D GRAPHL -lgraphl
+	${CC} -o $@ $^ -D GRAPHL ${CFLAGS} -lgraphl

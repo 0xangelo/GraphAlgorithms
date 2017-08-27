@@ -1,9 +1,9 @@
-#include "lib/prompt.h"
 #ifdef GRAPHL
-#include "lib/graphl.h"
+#include "graphl.h"
 #else
-#include "lib/graphm.h"
+#include "graphm.h"
 #endif
+#include "prompt.h"
 
 int main () {
     Graph G = GRAPHinit (1);
