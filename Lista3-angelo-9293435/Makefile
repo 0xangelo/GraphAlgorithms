@@ -11,11 +11,11 @@ $(OBJDIR):
 %M: $(OBJDIR)/%M.out | $(OBJDIR)
 	./$<
 
-$(OBJDIR)/%M.out: %.c GRAPHmatrix.c GRAPHmatrix.h
-	${CC} -o $@ $^ ${CFLAGS} -D GRAPHM
+$(OBJDIR)/%M.out: %.c graphm.c graphm.h
+	${CC} -o $@ -D'GRAPH="graphm.h"' $^ ${CFLAGS}
 
 %L: $(OBJDIR)/%L.out | $(OBJDIR)
 	./$<
 
-$(OBJDIR)/%L.out: %.c GRAPHlists.c GRAPHlists.h
-	${CC} -o $@ $^ ${CFLAGS} -D GRAPHL
+$(OBJDIR)/%L.out: %.c graphl.c graphl.h
+	${CC} -o $@ -D'GRAPH="graphl.h"' $^ ${CFLAGS}

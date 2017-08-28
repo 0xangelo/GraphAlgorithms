@@ -1,33 +1,32 @@
-#include "GRAPHmatrix.h"
+#include "graphl.h"
 
 static int cnt1, cnt2;
 static vertex *stack;
 static int k, N;
 
-/* REPRESENTAÇÃO POR MATRIZ DE ADJACÊNCIAS: A função MATRIXint() aloca uma matriz
-   com linhas 0..r-1 e colunas 0..c-1. Cada elemento da matriz recebe valor val. */
-static int **MATRIXint (int r, int c, int val) { 
-    vertex i, j;
-    int **m = malloc (r * sizeof (int *));
-    for (i = 0; i < r; ++i) 
-        m[i] = malloc (c * sizeof (int));
-    for (i = 0; i < r; ++i)
-        for (j = 0; j < c; ++j)
-            m[i][j] = val;
-    return m;
+/* A função NEWnode() recebe um vértice w e o endereço next de um nó e devolve o
+   endereço a de um novo nó tal que a->w == w e a->next == next. */
+static link NEWnode (vertex w, link next) { 
+    link a = malloc (sizeof (struct node));
+    a->w = w; 
+    a->next = next;     
+    return a;                         
 }
 
-/* REPRESENTAÇÃO POR MATRIZ DE ADJACÊNCIAS: A função GRAPHinit() constrói um 
+/* REPRESENTAÇÃO POR LISTAS DE ADJACÊNCIA: A função GRAPHinit() constrói um 
    grafo com vértices 0 1 .. V-1 e nenhum arco. */
 Graph GRAPHinit (int V) { 
+    vertex v;
     Graph G = malloc (sizeof *G);
     G->V = V; 
     G->A = 0;
-    G->adj = MATRIXint (V, V, 0);
-    G->pre = malloc (V * sizeof (int));
-    G->post = malloc (V * sizeof (int));
-    G->parent = malloc (V * sizeof (int));
-    G->low = malloc (V * sizeof (int));
+    G->adj = malloc (V * sizeof (link));
+    for (v = 0; v < V; ++v) 
+        G->adj[v] = NULL;
+    G->pre = malloc (V * sizeof v);
+    G->post = malloc (V * sizeof v);
+    G->parent = malloc (V * sizeof v);
+    G->low = malloc (V * sizeof v);
     return G;
 }
 
@@ -35,7 +34,7 @@ Graph GRAPHinputArcs (void) {
     int V, A, i, v, w, error;
     Graph G;
     error = scanf (" %d %d", &V, &A);
-    G = GRAPHinit (V);
+    G = GRAPHinit(V);
     for (i = 0; i < A; ++i) {
         error |= scanf (" %d %d", &v, &w);
         GRAPHinsertArc(G, v, w);
@@ -105,7 +104,7 @@ Graph GRAPHinputListsFile (FILE *in) {
     return G;
 }
 
-Graph UGRAPHknight () {
+Graph UGRAPHknight() {
     int i, j;
     Graph G = GRAPHinit (64);
     for (i = 0; i < 64; ++i) {
@@ -186,8 +185,8 @@ Graph GRAPHrand1 (int V, int A) {
     return G;
 }
 
-/* Constrói um grafo aleatório com vértices 0..V-1 e número esperado de arcos 
-   igual a A. A função supõe que V >= 2 e A <= V*(V-1). (Código inspirado no 
+/* Constrói um grafo aleatório com vértices 0..V-1 e número esperado de arcos
+   igual a A. A função supõe que V >= 2 e A <= V*(V-1). (Código inspirado no
    Program 17.8 de Sedgewick.) */
 Graph GRAPHrand2 (int V, int A) { 
     double prob = (double) A / V / (V-1);
@@ -219,27 +218,31 @@ UGraph UGRAPHrandU (int V, int E) {
     return G;
 }
 
-/* REPRESENTAÇÃO POR MATRIZ DE ADJACÊNCIAS: A função GRAPHinsertArc() insere um
+/* REPRESENTAÇÃO POR LISTAS DE ADJACÊNCIA: A função GRAPHinsertArc() insere um
    arco v-w no grafo G. A função supõe que v e w são distintos, positivos e 
    menores que G->V. Se o grafo já tem um arco v-w, a função não faz nada. */
 void GRAPHinsertArc (Graph G, vertex v, vertex w) { 
-    G->A += 1 - G->adj[v][w];
-    G->adj[v][w] = 1; 
+    link a;
+    for (a = G->adj[v]; a != NULL; a = a->next) 
+        if (a->w == w) return;
+    G->adj[v] = NEWnode (w, G->adj[v]);
+    G->A++;
 }
 
 void UGRAPHinsertArc (Graph G, vertex v, vertex w) {
-    G->A += ((v == w) ? 1 - G->adj[v][w] : 2 - G->adj[v][w] - G->adj[w][v]);
-    G->adj[v][w] = G->adj[w][v] = 1;
+    GRAPHinsertArc (G, v, w);
+    GRAPHinsertArc (G, w, v);
 }
 
-/* REPRESENTAÇÃO POR MATRIZ DE ADJACÊNCIAS: A função GRAPHremoveArc() remove do
-   grafo G o arco v-w. A função supõe que v e w são distintos, positivos e 
-   menores que G->V. Se não existe arco v-w, a função não faz nada. */
 void GRAPHremoveArc (Graph G, vertex v, vertex w) { 
-    if (G->adj[v][w] == 1) {
-        G->adj[v][w] = 0; 
-        G->A--;
-    }
+    link a, *ant;
+    for (ant = &G->adj[v], a = G->adj[v]; a != NULL; ant = &a, a = a->next)
+        if (a->w == w) {
+            *ant = a->next;
+            free (a);
+            G->A--;
+            return;
+        }
 }
 
 /* Seja X o conjunto dos vértices x que estão ao alcance de v e têm pre[x] == -1.
@@ -248,12 +251,12 @@ void GRAPHremoveArc (Graph G, vertex v, vertex w) {
    que G é representado por uma matriz de adjacências. (Código inspirado no 
    programa 18.1 de Sedgewick.) */
 static void dfsR (Graph G, vertex v) { 
-    vertex w;
+    link a;
     G->pre[v] = cnt1++; 
-    for (w = 0; w < G->V; ++w)
-        if (G->adj[v][w] != 0 && G->pre[w] == -1) {
-            G->parent[w] = v;
-            dfsR (G, w);
+    for (a = G->adj[v]; a != NULL; a = a->next)
+        if (G->pre[a->w] == -1) {
+            G->parent[a->w] = v;
+            dfsR (G, a->w);
         }
     G->post[v] = cnt2++;
 }
@@ -306,15 +309,18 @@ void GRAPHpath (Graph G, vertex s, vertex t) {
 
 int GRAPHindeg (Graph G, vertex v) {
     int i, ans = 0;
-    for (i = 0; i < G->V; ++i)
-        if (G->adj[i][v]) ans++;
+    link a;
+    for (i = 0; i < G->V; i++)
+        for (a = G->adj[i]; a != NULL; a = a->next)
+            if (a->w == v) ans++;
     return ans;
 }
 
 int GRAPHoutdeg (Graph G, vertex v) {
-    int i, ans = 0;
-    for (i = 0; i < G->V; ++i)
-        if (G->adj[v][i]) ans++;
+    int ans = 0;
+    link a;
+    for (a = G->adj[v]; a != NULL; a = a->next)
+        ans++;
     return ans;
 }
 
@@ -339,14 +345,14 @@ int GRAPHrootedForestHeight (Graph G, vertex *p) {
 }
 
 /* A função dfsRcc() atribui o número id a todos os vértices que estão na mesma 
-   componente conexa que v. A função supõe que o grafo é representado por 
-   listas de adjacência. */
-static void dfsRcc (UGraph G, int *cc, vertex v, int id) {
-    vertex w;
+   componente conexa que v. A função supõe que o grafo é representado por listas 
+   de adjacência. */
+static void dfsRcc (UGraph G, int *cc, vertex v, int id) { 
+    link a; 
     cc[v] = id;
-    for (w = 0; w < G->V; ++w)
-        if (G->adj[v][w] && cc[w] == -1) 
-            dfsRcc (G, cc, w, id); 
+    for (a = G->adj[v]; a != NULL; a = a->next)
+        if (cc[a->w] == -1) 
+            dfsRcc (G, cc, a->w, id); 
 }
 
 /* A função UGRAPHcc() devolve o número de componentes conexas do grafo 
@@ -380,16 +386,17 @@ int UGRAPHccAdd (UGraph G, int *cc, vertex v, vertex w) {
 /* O código de strongR() foi adaptado da figura 5.15 do livro de Aho,
    Hopcroft e Ullman. */
 static void strongR (Graph G, vertex v, int *sc) { 
-   vertex w, u; int min;
+   vertex w, u; link a; int min;
    G->pre[v] = cnt1++;
    min = G->pre[v]; 
    stack[N++] = v;
-   for (w = 0; w < G->V; ++w) {
-      if (G->adj[v][w] && G->pre[w] == -1) {
+   for (a = G->adj[v]; a != NULL; a = a->next) {
+      w = a->w;
+      if (G->pre[w] == -1) {
          strongR (G, w, sc);
          if (G->low[w] < min) min = G->low[w]; /*A*/
       }
-      else if (G->adj[v][w] && G->pre[w] < G->pre[v] && sc[w] == -1) {
+      else if (G->pre[w] < G->pre[v] && sc[w] == -1) {
          if (G->pre[w] < min) min = G->pre[w]; /*B*/
       }
    }
@@ -424,10 +431,15 @@ int GRAPHscT (Graph G, int *sc) {
 }
 
 bool GRAPHisUndirected (Graph G) {
-    int i, j;
+    int i, w;
+    link a, b;
     for (i = 0; i < G->V; ++i)
-        for (j = i; j < G->V; ++j)
-            if (G->adj[i][j] != G->adj[j][i]) return false;
+        for (a = G->adj[i]; a != NULL; a = a->next) {
+            w = a->w;
+            for (b = G->adj[w]; b != NULL; b = b->next)
+                if (b->w == i) break;
+            if (b == NULL) return false;
+        }
     return true;
 }
 
@@ -438,16 +450,20 @@ bool GRAPHisolated (Graph G, vertex v) {
 }
 
 bool GRAPHadj (Graph G, vertex v, vertex w) {
-    if (G->adj[v][w]) return true;
-    if (G->adj[w][v]) return false;
+    link a;
+    for (a = G->adj[v]; a != NULL; a = a->next)
+        if (a->w == w) return true;
+    for (a = G->adj[w]; a != NULL; a = a->next)
+        if (a->w == v) return true;
     return false;
 }
 
 bool GRAPHisTopoNumbering (Graph G, int *topo) {
-    vertex v, w;
+    vertex v;
+    link a;
     for (v = 0; v < G->V; ++v) 
-        for (w = 0; w < G->V; ++w) 
-            if (G->adj[v][w] && topo[v] >= topo[w]) 
+        for (a = G->adj[v]; a != NULL; a = a->next) 
+            if (topo[v] >= topo[a->w]) 
                 return false;
     return true;
 }
@@ -463,33 +479,33 @@ bool GRAPHisTopoOrder (Graph G, vertex *vv) {
 }
 
 bool GRAPHreach (Graph G, vertex s, vertex t) {
-    vertex v, w, *next;
+    vertex v; link a, *next;
     bool *visit;
     visit = malloc (G->V * sizeof (bool));
     stack = malloc (G->V * sizeof v);
-    next = malloc (G->V * sizeof v);
+    next = malloc (G->V * sizeof a);
 
     N = 0;
     for (v = 0; v < G->V; ++v) visit[v] = false;
     stack[N] = s;
-    next[N] = 0;
+    next[N] = G->adj[s];
 
     while (N >= 0) {
         v = stack[N];
-        w = next[N];
+        a = next[N];
         visit[v] = true;
         if (v == t) break;
 
-        while (w < G->V) {
-            if (G->adj[v][w] && !visit[w]) {
-                stack[N + 1] = w;
-                next[N + 1] = 0;
+        while (a != NULL) {
+            if (!visit[a->w]) {
+                stack[N + 1] = a->w;
+                next[N + 1] = G->adj[a->w];
                 break;
             }
-            w++;
+            a = a->next;
         }
-        next[N] = w;
-        if (w == G->V) N--;
+        next[N] = a;
+        if (a == NULL) N--;
         else N++;
     }
     free (visit); free (stack); free (next);
@@ -499,10 +515,11 @@ bool GRAPHreach (Graph G, vertex s, vertex t) {
 /* A função cycleR() devolve TRUE se encontra um ciclo ao percorrer G a partir 
    do vértice v e devolve FALSE em caso contrário. */
 static bool cycleR (Graph G, vertex v) { 
-    vertex w;
+    link a;
     G->pre[v] = cnt1++;
-    for (w = 0; w < G->V; ++w) {
-        if (G->adj[v][w] && G->pre[w] == -1) {
+    for (a = G->adj[v]; a != NULL; a = a->next) {
+        vertex w = a->w;
+        if (G->pre[w] == -1) {
             if (cycleR (G, w)) 
                 return true;
         } else {
@@ -534,23 +551,22 @@ bool UGRAPHisConnected (UGraph G) {
     return true;
 }
 
-/* REPRESENTAÇÃO POR MATRIZ DE ADJACÊNCIAS: A função GRAPHshow() imprime, para
-   cada vértice v do grafo G, em uma linha, todos os vértices adjacentes a v. */
 void GRAPHshow (Graph G) { 
-    vertex v, w; 
+    vertex v;
+    link a;
     for (v = 0; v < G->V; ++v) {
-        printf ("%2d:", v);
-        for (w = 0; w < G->V; ++w)
-            if (G->adj[v][w] == 1) 
-                printf (" %2d", w);
-        printf ("\n");
+        printf  ("%2d:", v);
+        for (a = G->adj[v]; a != NULL; a = a->next) {
+            printf  (" %2d", a->w);
+        }
+        printf  ("\n");
     }
 }
 
 void UGRAPHshowKnight (Graph G, int i, int j) {
     vertex v, w;
     for (v = i * 8 + j, w = 0; w < G->V; ++w) {
-        if (G->adj[v][w])
+        if (GRAPHadj (G, v, w))
             printf ("X ");
         else if (w == v)
             printf ("K ");
@@ -562,9 +578,16 @@ void UGRAPHshowKnight (Graph G, int i, int j) {
 }
 
 void GRAPHfree (Graph G) {
-    vertex i;
-    for (i = 0; i < G->V; i++)
-        free (G->adj[i]);
+    vertex v;
+    link a, b;
+    for (v = 0; v < G->V; ++v) {
+        a = G->adj[v];
+        while (a != NULL) {
+            b = a->next;
+            free (a);
+            a = b;
+        }
+    }
     free (G->adj);
     free (G->pre);
     free (G);
