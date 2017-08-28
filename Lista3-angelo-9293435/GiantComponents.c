@@ -4,8 +4,8 @@
 #include <time.h>
 #include <math.h>
 #include GRAPH
+#define T 100
 
-const int T = 1e3;
 const int V[] = {10, 50, 100, 500, 1000, 5000, 10000};
 const double E[] = {0.2, 0.5, 1, 2, 5, 10, 20};
 
@@ -19,11 +19,13 @@ int mean (int *i) {
 }
 
 int main () {
-    int v, e, *arr, i[1000], t;
+    int v, e, *arr, i[T], t;
     UGraph G;
+
     printf ("   V\\E");
     for (e = 0; e < 7; e++) printf ("%5.1fV", E[e]);
     printf ("\n");
+
     for (v = 0; v < 7; v++) {
         arr = malloc (V[v] * sizeof (int));
         printf ("%6d", V[v]);
