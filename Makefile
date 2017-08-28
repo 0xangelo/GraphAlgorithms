@@ -12,10 +12,10 @@ $(OBJDIR):
 	./$<
 
 $(OBJDIR)/%M.out: %.c
-	${CC} -o $@ $^ -D GRAPHM ${CFLAGS} -lgraphm
+	${CC} -o $@ -D'GRAPH="graphm.h"' $^ ${CFLAGS} -lgraphm
 
 %L: $(OBJDIR)/%L.out | $(OBJDIR)
 	./$<
 
 $(OBJDIR)/%L.out: %.c
-	${CC} -o $@ $^ -D GRAPHL ${CFLAGS} -lgraphl
+	${CC} -o $@ -D'GRAPH="graphl.h"' $^ ${CFLAGS} -lgraphl

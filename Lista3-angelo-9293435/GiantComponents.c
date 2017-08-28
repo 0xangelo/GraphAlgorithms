@@ -1,3 +1,6 @@
+#ifndef GRAPH
+#define GRAPH "graphl.h"
+#endif
 #include <time.h>
 #include <math.h>
 #include GRAPH
