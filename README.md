@@ -1,2 +1,2 @@
 # GraphAlgorithms
-C implementation of algorithms for graphs.
+C implementation of algorithms in graphs.
