@@ -19,7 +19,7 @@ int mean (int *i) {
 }
 
 int main () {
-    int v, e, *arr, i[T], t;
+    int v, e, *arr, *i[T], t, j;
     UGraph G;
 
     printf ("   V\\E");
@@ -28,17 +28,25 @@ int main () {
 
     for (v = 0; v < 7; v++) {
         arr = malloc (V[v] * sizeof (int));
+        
         printf ("%6d", V[v]);
         for (e = 0; e < 7; e++) {
+
             for (t = 0; t < T; t++) {
                 srand (time (NULL));
                 G = UGRAPHrandU (V[v], E[e]*V[v]);
                 i[t] = UGRAPHcc (G, arr);
+
+                for (j = 1; j <= V[v]; j++) {
+                    
+                }
+                    
                 GRAPHfree (G);
             }
             printf ("%6d", mean (i));
         }
         printf ("\n");
+        free (arr);
     }
     
     return 0;
