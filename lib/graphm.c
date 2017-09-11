@@ -304,6 +304,10 @@ void GRAPHpath (Graph G, vertex s, vertex t) {
     }
 }
 
+void UGRAPHbridges (UGraph G, int *b) {
+    int V = G->V;
+}
+
 int GRAPHindeg (Graph G, vertex v) {
     int i, ans = 0;
     for (i = 0; i < G->V; ++i)

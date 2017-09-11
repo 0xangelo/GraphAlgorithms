@@ -47,6 +47,7 @@ void GRAPHremoveArc (Graph G, vertex v, vertex w);
 void GRAPHdfs (Graph G);
 void GRAPHtopoOrder (Graph G, int *vv);
 void GRAPHpath (Graph G, vertex s, vertex t);
+void UGRAPHbridges (UGraph G, int *b);
 
 int GRAPHindeg (Graph G, vertex v);
 int GRAPHoutdeg (Graph G, vertex v);
