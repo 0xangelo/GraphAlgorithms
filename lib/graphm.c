@@ -314,21 +314,23 @@ void GRAPHpath (Graph G, vertex s, vertex t) {
     }
 }
 
-static void bridgesR (Graph G, vertex v) { 
+static void bridgesR (Graph G, vertex v) {
     vertex w; int min;
     G->pre[v] = cnt1++;
-    min = G->pre[v]; 
+    min = G->pre[v];
     for (w = 0; w < G->V; ++w) {
-        if (G->adj[v][w] && G->pre[w] == -1) {
+        if (!G->adj[v][w] || w == G->parent[v]) continue;
+        if (G->pre[w] == -1) {
+            G->parent[w] = v;
             bridgesR (G, w);
-            if (G->low[w] < min) min = G->low[w]; /*A*/
+            if (G->low[w] < min) min = G->low[w];
         }
-        else if (G->adj[v][w] && G->pre[w] < G->pre[v]) {
-            if (G->pre[w] < min) min = G->pre[w]; /*B*/
+        else if (G->pre[w] < G->pre[v]) {
+            if (G->pre[w] < min) min = G->pre[w];
         }
     }
     G->low[v] = min;
-    if (!(G->low[v] < G->pre[G->parent[v]]))
+    if (G->parent[v] != v && G->low[v] > G->pre[G->parent[v]])
         printf ("%d %d\n", G->parent[v], v);
 }
 
@@ -339,8 +341,10 @@ void UGRAPHbridges (UGraph G) {
 
     cnt1 = 0;
     for (v = 0; v < G->V; ++v) 
-        if (G->pre[v] == -1)
+        if (G->pre[v] == -1) {
+            G->parent[v] = v;
             bridgesR (G, v);
+        }
 }
 
 int GRAPHindeg (Graph G, vertex v) {

@@ -325,13 +325,14 @@ static void bridgesR (Graph G, vertex v) {
     min = G->pre[v];
     for (a = G->adj[v]; a != NULL; a = a->next) {
         w = a->w;
+        if (w == G->parent[v]) continue;
         if (G->pre[w] == -1) {
             G->parent[w] = v;
             bridgesR (G, w);
-            if (G->low[w] < min) min = G->low[w]; /*A*/
+            if (G->low[w] < min) min = G->low[w];
         }
         else if (G->pre[w] < G->pre[v]) {
-            if (G->pre[w] < min) min = G->pre[w]; /*B*/
+            if (G->pre[w] < min) min = G->pre[w];
         }
     }
     G->low[v] = min;
@@ -340,12 +341,12 @@ static void bridgesR (Graph G, vertex v) {
 }
 
 void UGRAPHbridges (UGraph G) {
-    vertex v; 
-    for (v = 0; v < G->V; ++v) 
+    vertex v;
+    for (v = 0; v < G->V; ++v)
         G->pre[v] = -1;
 
     cnt1 = 0;
-    for (v = 0; v < G->V; ++v) 
+    for (v = 0; v < G->V; ++v)
         if (G->pre[v] == -1) {
             G->parent[v] = v;
             bridgesR (G, v);
