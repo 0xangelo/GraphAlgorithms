@@ -1,4 +1,5 @@
 default:
+	rm *.a
 	gcc -c *.c -Wall -std=c99 -ansi -pedantic
 	ar -cvq libgraphm.a graphm.o
 	ar -cvq libgraphl.a graphl.o

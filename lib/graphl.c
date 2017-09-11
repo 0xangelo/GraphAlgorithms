@@ -165,7 +165,7 @@ Graph GRAPHbuildComplete (int V) {
 }
 
 /* A função randV() devolve um vértice aleatório do grafo G. */
-vertex randV (Graph G) { 
+static vertex randV (Graph G) { 
     double r;
     r = rand () / (RAND_MAX + 1.0);
     return r * G->V;
@@ -204,6 +204,18 @@ Graph GRAPHbuildRandRootedTree (int V) {
     Graph G;
     G = GRAPHinit (V);
     return G;
+}
+
+/* Constrói o inverso do grafo G. */
+Graph GRAPHreverse (Graph G) {
+    vertex v, w; link a;
+    Graph GR = GRAPHinit (G->V);
+    for (v = 0; v < G->V; ++v) 
+        for (a = G->adj[v]; a != NULL; a = a->next) {
+            w = a->w;
+            GRAPHinsertArc (GR, w, v);
+        }
+    return GR;
 }
 
 UGraph UGRAPHrandU (int V, int E) {
@@ -302,9 +314,42 @@ void GRAPHpath (Graph G, vertex s, vertex t) {
         for (N = 0, v = t; v != G->parent[v]; v = G->parent[v])
             stack[N++] = v;
         printf ("%2d", s);
-        while (N > 0) printf (" %2d", stack[--N]);
-        printf ("\n");
+        for (v = N - 1; v >= 0; --v)
+            printf ("%2d%c", stack[v], v == 0 ? '\n' : ' ');
     }
+}
+
+static void bridgesR (Graph G, vertex v) { 
+    vertex w; link a; int min;
+    G->pre[v] = cnt1++;
+    min = G->pre[v];
+    for (a = G->adj[v]; a != NULL; a = a->next) {
+        w = a->w;
+        if (G->pre[w] == -1) {
+            G->parent[w] = v;
+            bridgesR (G, w);
+            if (G->low[w] < min) min = G->low[w]; /*A*/
+        }
+        else if (G->pre[w] < G->pre[v]) {
+            if (G->pre[w] < min) min = G->pre[w]; /*B*/
+        }
+    }
+    G->low[v] = min;
+    if (G->parent[v] != v && G->low[v] > G->pre[G->parent[v]])
+        printf ("%d %d\n", G->parent[v], v);
+}
+
+void UGRAPHbridges (UGraph G) {
+    vertex v; 
+    for (v = 0; v < G->V; ++v) 
+        G->pre[v] = -1;
+
+    cnt1 = 0;
+    for (v = 0; v < G->V; ++v) 
+        if (G->pre[v] == -1) {
+            G->parent[v] = v;
+            bridgesR (G, v);
+        }
 }
 
 int GRAPHindeg (Graph G, vertex v) {
@@ -386,28 +431,28 @@ int UGRAPHccAdd (UGraph G, int *cc, vertex v, vertex w) {
 /* O código de strongR() foi adaptado da figura 5.15 do livro de Aho,
    Hopcroft e Ullman. */
 static void strongR (Graph G, vertex v, int *sc) { 
-   vertex w, u; link a; int min;
-   G->pre[v] = cnt1++;
-   min = G->pre[v]; 
-   stack[N++] = v;
-   for (a = G->adj[v]; a != NULL; a = a->next) {
-      w = a->w;
-      if (G->pre[w] == -1) {
-         strongR (G, w, sc);
-         if (G->low[w] < min) min = G->low[w]; /*A*/
-      }
-      else if (G->pre[w] < G->pre[v] && sc[w] == -1) {
-         if (G->pre[w] < min) min = G->pre[w]; /*B*/
-      }
-   }
-   G->low[v] = min;
-   if (G->low[v] == G->pre[v]) {               /*C*/
-      do {
-         u = stack[--N];
-         sc[u] = k;
-      } while (u != v);
-      k++;
-   }
+    vertex w, u; link a; int min;
+    G->pre[v] = cnt1++;
+    min = G->pre[v]; 
+    stack[N++] = v;
+    for (a = G->adj[v]; a != NULL; a = a->next) {
+        w = a->w;
+        if (G->pre[w] == -1) {
+            strongR (G, w, sc);
+            if (G->low[w] < min) min = G->low[w]; /*A*/
+        }
+        else if (G->pre[w] < G->pre[v] && sc[w] == -1) {
+            if (G->pre[w] < min) min = G->pre[w]; /*B*/
+        }
+    }
+    G->low[v] = min;
+    if (G->low[v] == G->pre[v]) {               /*C*/
+        do {
+            u = stack[--N];
+            sc[u] = k;
+        } while (u != v);
+        k++;
+    }
 }
 
 /* A função GRAPHscT() devolve o número de componentes fortes do grafo G e 
@@ -416,18 +461,65 @@ static void strongR (Graph G, vertex v, int *sc) {
    contém u. Os nomes das componentes fortes são 0, 1, 2, etc. (A função 
    implementa o algoritmo de Tarjan.) */
 int GRAPHscT (Graph G, int *sc) {
-   vertex v; 
-   stack = malloc (G->V * sizeof (vertex));
-   for (v = 0; v < G->V; ++v) 
-      G->pre[v] = sc[v] = -1;
+    vertex v; 
+    stack = malloc (G->V * sizeof (vertex));
+    for (v = 0; v < G->V; ++v) 
+        G->pre[v] = sc[v] = -1;
 
-   k = N = cnt1 = 0;
-   for (v = 0; v < G->V; ++v) 
-      if (G->pre[v] == -1)
-         strongR (G, v, sc);
+    k = N = cnt1 = 0;
+    for (v = 0; v < G->V; ++v) 
+        if (G->pre[v] == -1)
+            strongR (G, v, sc);
    
-   free (stack);
-   return k;
+    free (stack);
+    return k;
+}
+
+/* Atribui o rótulo k a todo vértice w ao alcance de v que ainda não foi 
+   rotulado. Os rótulos são armazenados no vetor sc[]. */
+static void dfsRsc( Graph G, vertex v, int *sc, int k) { 
+    link a;
+    sc[v] = k;
+    for (a = G->adj[v]; a != NULL; a = a->next)
+        if (sc[a->w] == -1) 
+            dfsRsc( G, a->w, sc, k);
+}
+
+/* Esta função atribui um rótulo sc[v] (os rótulos são 0,1,2,...) a cada vértice
+   v do grafo G de modo que dois vértices tenham o mesmo rótulo se e somente se 
+   os dois pertencem à mesma componente forte. A função devolve o número 
+   (quantidade) de componentes fortes de G. (A função implementa o algoritmo de 
+   Kosaraju. O código é adaptado do Programa 19.10 de Sedgewick.) */
+int GRAPHscK (Graph G, int *sc) {
+    int k, i, *vv;
+    vertex v; 
+    
+    /* fase 1 */
+    Graph GR = GRAPHreverse (G);
+    vv = malloc (G->V * sizeof (int));
+   
+    cnt1 = cnt2 = 0;
+    for (v = 0; v < GR->V; ++v) 
+        GR->pre[v] = -1;
+    for (v = 0; v < GR->V; ++v) 
+        if (GR->pre[v] == -1)
+            dfsR (GR, v);
+    for (v = 0; v < GR->V; ++v) 
+        vv[GR->post[v]] = v;
+
+    /* fase 2 */
+    for (v = 0; v < G->V; ++v) 
+        sc[v] = -1;
+    for (k = 0, i = G->V-1; i >= 0; --i) {
+        v = vv[i];
+        if (sc[v] == -1) { /* nova etapa */
+            dfsRsc (G, v, sc, k);
+            k++;
+        }
+    }
+    GRAPHfree (GR);
+    free (vv);
+    return k;
 }
 
 bool GRAPHisUndirected (Graph G) {
