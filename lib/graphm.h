@@ -39,6 +39,7 @@ Graph UGRAPHknight (void);
 Graph GRAPHbuildComplete (int V);
 Graph GRAPHrand1 (int V, int A);
 Graph GRAPHrand2 (int V, int A);
+Graph GRAPHreverse (Graph G);
 UGraph UGRAPHrandU (int V, int E);
 
 void GRAPHinsertArc (Graph G, vertex v, vertex w); 
@@ -55,6 +56,7 @@ int GRAPHrootedForestHeight (Graph G, vertex *p);
 int UGRAPHcc (UGraph G, int *cc);
 int UGRAPHccAdd (UGraph G, int *cc, vertex v, vertex w);
 int GRAPHscT (Graph G, int *sc);
+int GRAPHscK (Graph G, int *sc);
 bool GRAPHisUndirected (Graph G);
 bool GRAPHisolated (Graph G, vertex v);
 bool GRAPHadj (Graph G, vertex v, vertex w);
