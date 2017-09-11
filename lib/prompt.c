@@ -10,6 +10,7 @@ char *func_names[] = {
     "buildComplete",
     "rand1",
     "rand2",
+    "randU",
     "insertArc",
     "insertUArc",
     "removeArc",

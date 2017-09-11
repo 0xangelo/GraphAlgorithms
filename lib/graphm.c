@@ -314,8 +314,33 @@ void GRAPHpath (Graph G, vertex s, vertex t) {
     }
 }
 
-void UGRAPHbridges (UGraph G, int *b) {
-    int V = G->V;
+static void bridgesR (Graph G, vertex v) { 
+    vertex w; int min;
+    G->pre[v] = cnt1++;
+    min = G->pre[v]; 
+    for (w = 0; w < G->V; ++w) {
+        if (G->adj[v][w] && G->pre[w] == -1) {
+            bridgesR (G, w);
+            if (G->low[w] < min) min = G->low[w]; /*A*/
+        }
+        else if (G->adj[v][w] && G->pre[w] < G->pre[v]) {
+            if (G->pre[w] < min) min = G->pre[w]; /*B*/
+        }
+    }
+    G->low[v] = min;
+    if (!(G->low[v] < G->pre[G->parent[v]]))
+        printf ("%d %d\n", G->parent[v], v);
+}
+
+void UGRAPHbridges (UGraph G) {
+    vertex v; 
+    for (v = 0; v < G->V; ++v) 
+        G->pre[v] = -1;
+
+    cnt1 = 0;
+    for (v = 0; v < G->V; ++v) 
+        if (G->pre[v] == -1)
+            bridgesR (G, v);
 }
 
 int GRAPHindeg (Graph G, vertex v) {
@@ -443,7 +468,7 @@ static void dfsRsc( Graph G, vertex v, int *sc, int k) {
     vertex w;;
     sc[v] = k;
     for (w = 0; w < G->V; ++w)
-        if (sc[w] == -1) 
+        if (G->adj[v][w] && sc[w] == -1) 
             dfsRsc( G, w, sc, k);
 }
 
