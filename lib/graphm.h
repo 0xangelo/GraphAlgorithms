@@ -23,7 +23,7 @@ struct graph {
     int **adj;
     int *pre;
     int *post;
-    int *parent;
+    int *pred;
     int *low;
 };
 

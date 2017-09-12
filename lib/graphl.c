@@ -25,7 +25,7 @@ Graph GRAPHinit (int V) {
         G->adj[v] = NULL;
     G->pre = malloc (V * sizeof v);
     G->post = malloc (V * sizeof v);
-    G->parent = malloc (V * sizeof v);
+    G->pred = malloc (V * sizeof v);
     G->low = malloc (V * sizeof v);
     return G;
 }
@@ -270,7 +270,7 @@ static void dfsR (Graph G, vertex v) {
     G->pre[v] = cnt1++; 
     for (a = G->adj[v]; a != NULL; a = a->next)
         if (G->pre[a->w] == -1) {
-            G->parent[a->w] = v;
+            G->pred[a->w] = v;
             dfsR (G, a->w);
         }
     G->post[v] = cnt2++;
@@ -287,7 +287,7 @@ void GRAPHdfs (Graph G) {
         G->pre[v] = -1;
     for (v = 0; v < G->V; ++v)
         if (G->pre[v] == -1) {
-            G->parent[v] = v;
+            G->pred[v] = v;
             dfsR (G, v);
         }
 }
@@ -303,7 +303,7 @@ void GRAPHpath (Graph G, vertex s, vertex t) {
     vertex v;
     cnt1 = cnt2 = 0;
     for (v = 0; v < G->V; ++v) G->pre[v] = -1;
-    G->parent[s] = s;
+    G->pred[s] = s;
     dfsR (G, s);
 
     if (G->pre[t] == -1) {
@@ -314,7 +314,7 @@ void GRAPHpath (Graph G, vertex s, vertex t) {
     }
     else {
         stack = malloc (G->V * sizeof v);
-        for (N = 0, v = t; v != G->parent[v]; v = G->parent[v])
+        for (N = 0, v = t; v != G->pred[v]; v = G->pred[v])
             stack[N++] = v;
         printf ("%2d", s);
         for (v = N - 1; v >= 0; --v)
@@ -328,9 +328,9 @@ static void bridgesR (Graph G, vertex v) {
     min = G->pre[v];
     for (a = G->adj[v]; a != NULL; a = a->next) {
         w = a->w;
-        if (w == G->parent[v]) continue;
+        if (w == G->pred[v]) continue;
         if (G->pre[w] == -1) {
-            G->parent[w] = v;
+            G->pred[w] = v;
             bridgesR (G, w);
             if (G->low[w] < min) min = G->low[w];
         }
@@ -339,8 +339,8 @@ static void bridgesR (Graph G, vertex v) {
         }
     }
     G->low[v] = min;
-    if (G->parent[v] != v && G->low[v] > G->pre[G->parent[v]])
-        printf ("%d-%d\n", G->parent[v], v);
+    if (G->pred[v] != v && G->low[v] > G->pre[G->pred[v]])
+        printf ("%d-%d\n", G->pred[v], v);
 }
 
 void UGRAPHbridges (UGraph G) {
@@ -351,7 +351,7 @@ void UGRAPHbridges (UGraph G) {
     cnt1 = 0;
     for (v = 0; v < G->V; ++v)
         if (G->pre[v] == -1) {
-            G->parent[v] = v;
+            G->pred[v] = v;
             bridgesR (G, v);
         }
 }
@@ -396,7 +396,7 @@ int GRAPHrootedForestHeight (Graph G, vertex *p) {
 
 int GRAPHdfsForestHeight (Graph G) {
     GRAPHdfs (G);
-    return GRAPHrootedForestHeight (G, G->parent);
+    return GRAPHrootedForestHeight (G, G->pred);
 }
 
 /* A função dfsRcc() atribui o número id a todos os vértices que estão na mesma 

@@ -154,14 +154,14 @@ int main () {
         case 14:
             printf ("void GRAPHdfs (Graph G)\n");
             GRAPHdfs (G);
-            printf ("v       ");
+            printf ("v     ");
             for (v = 0; v < G->V; ++v) printf ("%2d%c", v, (v == G->V - 1) ? '\n' : ' ');
-            printf ("pre     ");
+            printf ("pre   ");
             for (v = 0; v < G->V; ++v) printf ("%2d%c", G->pre[v], (v == G->V - 1) ? '\n' : ' ');
-            printf ("post    ");
+            printf ("post  ");
             for (v = 0; v < G->V; ++v) printf ("%2d%c", G->post[v], (v == G->V - 1) ? '\n' : ' ');
-            printf ("parent  ");
-            for (v = 0; v < G->V; ++v) printf ("%2d%c", G->parent[v], (v == G->V - 1) ? '\n' : ' ');
+            printf ("pred  ");
+            for (v = 0; v < G->V; ++v) printf ("%2d%c", G->pred[v], (v == G->V - 1) ? '\n' : ' ');
             break;
 
         case 15:

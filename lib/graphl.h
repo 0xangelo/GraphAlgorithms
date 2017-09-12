@@ -31,7 +31,7 @@ struct graph {
     link *adj;
     int *pre;
     int *post;
-    int *parent;
+    int *pred;
     int *low;
 };
 
