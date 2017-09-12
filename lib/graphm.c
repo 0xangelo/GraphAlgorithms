@@ -177,9 +177,11 @@ static vertex randV (Graph G) {
    pode consumir muito tempo. (Código inspirado no Programa 17.7 de Sedgewick.) */
 Graph GRAPHrand1 (int V, int A) { 
     Graph G = GRAPHinit (V);
+    vertex v, w;
+    srand (time (NULL));
     while (G->A < A) {
-        vertex v = randV (G);
-        vertex w = randV (G);
+        v = randV (G);
+        w = randV (G);
         if (v != w) 
             GRAPHinsertArc (G, v, w);
     }
@@ -193,6 +195,7 @@ Graph GRAPHrand2 (int V, int A) {
     double prob = (double) A / V / (V-1);
     Graph G = GRAPHinit (V);
     vertex v, w;
+    srand (time (NULL));
     for (v = 0; v < V; ++v)
         for (w = 0; w < V; ++w)
             if (v != w)

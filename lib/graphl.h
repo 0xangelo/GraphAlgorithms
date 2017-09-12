@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <time.h>
 
 /* Vértices de grafos são representados por objetos do tipo vertex. */
 #define vertex int
