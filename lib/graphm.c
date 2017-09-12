@@ -331,7 +331,7 @@ static void bridgesR (Graph G, vertex v) {
     }
     G->low[v] = min;
     if (G->parent[v] != v && G->low[v] > G->pre[G->parent[v]])
-        printf ("%d %d\n", G->parent[v], v);
+        printf ("%d-%d\n", G->parent[v], v);
 }
 
 void UGRAPHbridges (UGraph G) {
