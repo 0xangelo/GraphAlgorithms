@@ -381,6 +381,11 @@ int GRAPHrootedForestHeight (Graph G, vertex *p) {
     return max;
 }
 
+int GRAPHdfsForestHeight (Graph G) {
+    GRAPHdfs (G);
+    return GRAPHrootedForestHeight (G, G->parent);
+}
+
 /* A função dfsRcc() atribui o número id a todos os vértices que estão na mesma 
    componente conexa que v. A função supõe que o grafo é representado por 
    listas de adjacência. */

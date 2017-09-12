@@ -21,6 +21,7 @@ char *func_names[] = {
     "indeg",
     "outdeg",
     "rootedForestHeight",
+    "dfsForestHeight",
     "cc",
     "ccAdd",
     "scT",

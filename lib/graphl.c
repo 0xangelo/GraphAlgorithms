@@ -374,6 +374,7 @@ int GRAPHrootedForestHeight (Graph G, vertex *p) {
     int *h, *stack, top = 0, i, max = 0;
     h = malloc (G->V * sizeof (int));
     stack = malloc (G->V * sizeof (int));
+
     for (i = 0; i < G->V; ++i) h[i] = (i == p[i] ? 0:-1);
     for (i = 0; i < G->V; ++i) {
         while (h[i] == -1) {
@@ -388,6 +389,11 @@ int GRAPHrootedForestHeight (Graph G, vertex *p) {
     }
     free (h); free (stack);
     return max;
+}
+
+int GRAPHdfsForestHeight (Graph G) {
+    GRAPHdfs (G);
+    return GRAPHrootedForestHeight (G, G->parent);
 }
 
 /* A função dfsRcc() atribui o número id a todos os vértices que estão na mesma 
