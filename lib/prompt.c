@@ -15,6 +15,7 @@ char *func_names[] = {
     "insertUArc",
     "removeArc",
     "dfs",
+    "bfs",
     "topoOrder",
     "path",
     "bridges",

@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <time.h>
+#include "queue.h"
 
 /* Vértices de grafos são representados por objetos do tipo vertex. */
 #define vertex int
@@ -25,6 +26,7 @@ struct graph {
     int *post;
     int *pred;
     int *low;
+    int *num;
 };
 
 /* Um Graph é um ponteiro para um graph, ou seja, um Graph contém o
@@ -47,6 +49,7 @@ void GRAPHinsertArc (Graph G, vertex v, vertex w);
 void UGRAPHinsertArc (Graph G, vertex v, vertex w);
 void GRAPHremoveArc (Graph G, vertex v, vertex w); 
 void GRAPHdfs (Graph G);
+void GRAPHbfs (Graph G, vertex s);
 void GRAPHtopoOrder (Graph G, int *vv);
 void GRAPHpath (Graph G, vertex s, vertex t);
 void UGRAPHbridges (UGraph G);

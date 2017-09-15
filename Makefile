@@ -1,4 +1,4 @@
-CFLAGS= -Wall -std=c99 -ansi -pedantic -O2 -iquote lib/ -L./lib/ -lprompt -lreadline
+CFLAGS= -Wall -std=c99 -ansi -pedantic -O2 -iquote lib/ -L./lib/ -lprompt -lreadline -lqueue
 CC= gcc
 
 OBJDIR := bin
@@ -13,10 +13,10 @@ $(OBJDIR):
 	./$<
 
 $(OBJDIR)/%M.out: %.c
-	${CC} -o $@ -D'GRAPH="graphm.h"' $^ ${CFLAGS} -lgraphm
+	${CC} -o $@ -D'GRAPH="graphm.h"' $^ -lgraphm ${CFLAGS}
 
 %L: $(OBJDIR)/%L.out | $(OBJDIR) $(LIBDIR)
 	./$<
 
 $(OBJDIR)/%L.out: %.c
-	${CC} -o $@ -D'GRAPH="graphl.h"' $^ ${CFLAGS} -lgraphl
+	${CC} -o $@ -D'GRAPH="graphl.h"' $^ -lgraphl ${CFLAGS}

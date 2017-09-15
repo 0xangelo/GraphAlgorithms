@@ -27,6 +27,7 @@ Graph GRAPHinit (int V) {
     G->post = malloc (V * sizeof v);
     G->pred = malloc (V * sizeof v);
     G->low = malloc (V * sizeof v);
+    G->num = malloc (V * sizeof v);
     return G;
 }
 
@@ -290,6 +291,31 @@ void GRAPHdfs (Graph G) {
             G->pred[v] = v;
             dfsR (G, v);
         }
+}
+
+/* A função GRAPHbfs() implementa o algoritmo de busca em largura. Ela visita 
+   todos os vértices do grafo G que estão ao alcance do vértice s.  A ordem em 
+   que os vértices são descobertos é registrada no vetor num[]. Esta versão da 
+   função supõe que o grafo G é representado por listas de adjacência.  (Código 
+   inspirado no programa 18.9 de Sedgewick.) */
+void GRAPHbfs (Graph G, vertex s) { 
+    vertex v; link a; Queue Q;
+    int cnt = 0;
+    for (v = 0; v < G->V; ++v)
+        G->num[v] = -1;
+    Q = QUEUEinit (G->V);
+    G->num[s] = cnt++; 
+    QUEUEput(Q, s); 
+
+    while (!QUEUEempty (Q)) {
+        v = QUEUEget (Q); 
+        for (a = G->adj[v]; a != NULL; a = a->next)
+            if (G->num[a->w] == -1) {
+                G->num[a->w] = cnt++; 
+                QUEUEput (Q, a->w); 
+            }
+    }
+    QUEUEfree (Q); 
 }
 
 void GRAPHtopoOrder (Graph G, int *vv) {
