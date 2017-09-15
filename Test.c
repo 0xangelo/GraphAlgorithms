@@ -166,7 +166,12 @@ int main () {
 
         case 15:
             printf ("void GRAPHbfs (Graph G, vertex s)\n");
-            GRAPHbfs (G);
+            while (scanf (" %d", &v) != EOF) {
+                if (v >= 0) {
+                    GRAPHbfs (G, v);
+                    break;
+                }
+            }
             printf ("v     ");
             for (v = 0; v < G->V; ++v) printf ("%2d%c", v, (v == G->V - 1) ? '\n' : ' ');
             printf ("num   ");

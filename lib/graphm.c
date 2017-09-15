@@ -293,25 +293,25 @@ void GRAPHdfs (Graph G) {
    que os vértices são descobertos é registrada no vetor num[]. Esta versão da 
    função supõe que o grafo G é representado por listas de adjacência.  (Código 
    inspirado no programa 18.9 de Sedgewick.) */
-/* void GRAPHbfs (Graph G, vertex s) {  */
-/*     vertex v, w; Queue Q; */
-/*     int cnt = 0; */
-/*     for (v = 0; v < G->V; ++v) */
-/*         G->num[v] = -1; */
-/*     Q = QUEUEinit (G->V); */
-/*     G->num[s] = cnt++;  */
-/*     QUEUEput(Q, s);  */
+void GRAPHbfs (Graph G, vertex s) {
+    vertex v, w; Queue Q;
+    int cnt = 0;
+    for (v = 0; v < G->V; ++v)
+        G->num[v] = -1;
+    Q = QUEUEinit (G->V);
+    G->num[s] = cnt++;
+    QUEUEput(Q, s);
 
-/*     while (!QUEUEempty (Q)) { */
-/*         v = QUEUEget (Q);  */
-/*         for (w = 0; w < G->V; ++w) */
-/*             if (G->adj[v][w] && G->num[w] == -1) { */
-/*                 G->num[w] = cnt++;  */
-/*                 QUEUEput (Q, w);  */
-/*             } */
-/*     } */
-/*     QUEUEfree (Q);  */
-/* } */
+    while (!QUEUEempty (Q)) {
+        v = QUEUEget (Q);
+        for (w = 0; w < G->V; ++w)
+            if (G->adj[v][w] && G->num[w] == -1) {
+                G->num[w] = cnt++;
+                QUEUEput (Q, w);
+            }
+    }
+    QUEUEfree (Q);
+}
 
 void GRAPHtopoOrder (Graph G, int *vv) {
     vertex v;

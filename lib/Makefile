@@ -1,5 +1,5 @@
 default:
-	rm *.a
+	rm -f *.a
 	gcc -c *.c -Wall -std=c99 -ansi -pedantic
 	ar -cvq libqueue.a queue.o
 	ar -cvq libgraphm.a graphm.o
