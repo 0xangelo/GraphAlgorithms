@@ -6,13 +6,6 @@
 
 #define vertex int
 
-struct queue {
-    int n;
-    int size;
-    int first;
-    int last;
-    int *cont;
-};
 typedef struct queue *Queue;
 
 Queue QUEUEinit (int size);

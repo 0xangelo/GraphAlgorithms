@@ -6,9 +6,11 @@
 
 int main () {
     Graph G = GRAPHinit (1);
-    FILE * in;
+    Stack S;
+    FILE * in, * out;
     vertex v, w;
-    int error = 0, V, A, E, *arr, func, i;
+    int *arr, *arr2;
+    int error = 0, V, A, E, func, i;
     char *file = NULL, *command = NULL;
     bool jump = false;
     
@@ -30,6 +32,7 @@ int main () {
                 if (V > 0) {
                     GRAPHfree (G);
                     G = GRAPHinit (V);
+                    A = 0;
                     break;
                 }
                 printf ("Please insert an integer V > 0\n");
@@ -40,12 +43,16 @@ int main () {
             printf ("Graph GRAPHinputArcs (void)\n");
             GRAPHfree (G);
             G = GRAPHinputArcs ();
+            V = GRAPHvertices (G);
+            A = GRAPHarcs (G);
             break;
             
         case 3:
             printf ("Graph GRAPHinputLists (void)\n");
             GRAPHfree (G);
             G = GRAPHinputLists ();
+            V = GRAPHvertices (G);
+            A = GRAPHarcs (G);
             break;
 
         case 4:
@@ -55,6 +62,8 @@ int main () {
                 in = fopen (file, "r");
                 GRAPHfree (G);
                 G = GRAPHinputArcsFile (in);
+                V = GRAPHvertices (G);
+                A = GRAPHarcs (G);
                 fclose (in);
             }
             break;
@@ -66,6 +75,8 @@ int main () {
                 in = fopen (file, "r");
                 GRAPHfree (G);
                 G = GRAPHinputListsFile (in);
+                V = GRAPHvertices (G);
+                A = GRAPHarcs (G);
                 fclose (in);
             }
             break;
@@ -74,6 +85,8 @@ int main () {
             printf ("Graph UGRAPHknight ()\n");
             GRAPHfree (G);
             G = UGRAPHknight ();
+            V = GRAPHvertices (G);
+            A = GRAPHarcs (G);
             break;
 
         case 7:
@@ -82,6 +95,8 @@ int main () {
                 if (V > 0) {
                     GRAPHfree (G);
                     G = GRAPHbuildComplete (V);
+                    V = GRAPHvertices (G);
+                    A = GRAPHarcs (G);
                     break;
                 }
             }
@@ -126,6 +141,7 @@ int main () {
             while (scanf (" %d %d", &v, &w) != EOF) {
                 if (v >= 0 && w >= 0) {
                     GRAPHinsertArc (G, v, w);
+                    A = GRAPHarcs (G);
                     break;
                 }
             }
@@ -136,6 +152,7 @@ int main () {
             while (scanf (" %d %d", &v, &w) != EOF) {
                 if (v >= 0 && w >= 0) {
                     UGRAPHinsertArc (G, v, w);
+                    A = GRAPHarcs (G);
                     break;
                 }
             }
@@ -146,6 +163,7 @@ int main () {
             while (scanf (" %d %d", &v, &w) != EOF) {
                 if (v >= 0 && w >= 0) {
                     GRAPHremoveArc (G, v, w);
+                    A = GRAPHarcs (G);
                     break;
                 }
             }
@@ -154,14 +172,6 @@ int main () {
         case 14:
             printf ("void GRAPHdfs (Graph G)\n");
             GRAPHdfs (G);
-            printf ("v     ");
-            for (v = 0; v < G->V; ++v) printf ("%2d%c", v, (v == G->V - 1) ? '\n' : ' ');
-            printf ("pre   ");
-            for (v = 0; v < G->V; ++v) printf ("%2d%c", G->pre[v], (v == G->V - 1) ? '\n' : ' ');
-            printf ("post  ");
-            for (v = 0; v < G->V; ++v) printf ("%2d%c", G->post[v], (v == G->V - 1) ? '\n' : ' ');
-            printf ("pred  ");
-            for (v = 0; v < G->V; ++v) printf ("%2d%c", G->pred[v], (v == G->V - 1) ? '\n' : ' ');
             break;
 
         case 15:
@@ -172,18 +182,14 @@ int main () {
                     break;
                 }
             }
-            printf ("v     ");
-            for (v = 0; v < G->V; ++v) printf ("%2d%c", v, (v == G->V - 1) ? '\n' : ' ');
-            printf ("num   ");
-            for (v = 0; v < G->V; ++v) printf ("%2d%c", G->num[v], (v == G->V - 1) ? '\n' : ' ');
             break;
 
         case 16:
             printf ("void GRAPHtopoOrder (Graph G, int *vv)\n");
-            arr = malloc (G->V * sizeof (int));
+            arr = malloc (V * sizeof (int));
             GRAPHtopoOrder (G, arr);
-            for (v = 0; v < G->V; ++v)
-                printf ("%2d%c", arr[v], ((v == G->V - 1)) ? '\n' : ' ');
+            for (v = 0; v < V; ++v)
+                printf ("%2d%c", arr[v], ((v == V - 1)) ? '\n' : ' ');
             free (arr);
             break;
 
@@ -225,8 +231,8 @@ int main () {
 
         case 21:
             printf ("int GRAPHrootedForestHeight (Graph G, vertex *p)\n");
-            arr = malloc (G->V * sizeof (int));
-            for (i = 0; i < G->V; ++i) error |= scanf (" %d", &arr[i]);
+            arr = malloc (V * sizeof (int));
+            for (i = 0; i < V; ++i) error |= scanf (" %d", &arr[i]);
             printf (" %d\n", GRAPHrootedForestHeight (G, arr));
             free (arr);
             break;
@@ -238,51 +244,51 @@ int main () {
 
         case 23:
             printf ("int UGRAPHcc (UGraph G, int *cc)\n");
-            arr = malloc (G->V * sizeof (int));
+            arr = malloc (V * sizeof (int));
             printf ("components: %2d\n", UGRAPHcc (G, arr));
             printf ("v           ");
-            for (i = 0; i < G->V; ++i) printf ("%2d%c", i, (i == G->V - 1) ? '\n' : ' ');
+            for (i = 0; i < V; ++i) printf ("%2d%c", i, (i == V - 1) ? '\n' : ' ');
             printf ("cc          ");
-            for (i = 0; i < G->V; ++i) printf ("%2d%c", arr[i], (i == G->V - 1) ? '\n' : ' ');
+            for (i = 0; i < V; ++i) printf ("%2d%c", arr[i], (i == V - 1) ? '\n' : ' ');
             free (arr);
             break;
 
         case 24:
             printf ("int UGRAPHccAdd (UGraph G, int *cc, vertex v, vertex w)\n");
             while (scanf (" %d %d", &v, &w) != EOF && v < 0 && w < 0) {}
-            arr = malloc (G->V * sizeof (int));
+            arr = malloc (V * sizeof (int));
             printf ("components: %2d\n", UGRAPHcc (G, arr));
             printf ("v           ");
-            for (i = 0; i < G->V; ++i) printf ("%2d%c", i, (i == G->V - 1) ? '\n' : ' ');
+            for (i = 0; i < V; ++i) printf ("%2d%c", i, (i == V - 1) ? '\n' : ' ');
             printf ("cc          ");
-            for (i = 0; i < G->V; ++i) printf ("%2d%c", arr[i], (i == G->V - 1) ? '\n' : ' ');
+            for (i = 0; i < V; ++i) printf ("%2d%c", arr[i], (i == V - 1) ? '\n' : ' ');
             printf ("components: %2d", UGRAPHccAdd (G, arr, v, w));
             printf ("v           ");
-            for (i = 0; i < G->V; ++i) printf ("%2d%c", i, (i == G->V - 1) ? '\n' : ' ');
+            for (i = 0; i < V; ++i) printf ("%2d%c", i, (i == V - 1) ? '\n' : ' ');
             printf ("cc          ");
-            for (i = 0; i < G->V; ++i) printf ("%2d%c", arr[i], (i == G->V - 1) ? '\n' : ' ');
+            for (i = 0; i < V; ++i) printf ("%2d%c", arr[i], (i == V - 1) ? '\n' : ' ');
             free (arr);
             break;
 
         case 25:
             printf ("int GRAPHscT (Graph G, int *sc)\n");
-            arr = malloc (G->V * sizeof (int));
-            printf ("components: %2d", GRAPHscT (G, arr));
+            arr = malloc (V * sizeof (int));
+            printf ("components: %2d\n", GRAPHscT (G, arr));
             printf ("v           ");
-            for (i = 0; i < G->V; ++i) printf ("%2d%c", i, (i == G->V - 1) ? '\n' : ' ');
+            for (i = 0; i < V; ++i) printf ("%2d%c", i, (i == V - 1) ? '\n' : ' ');
             printf ("sc          ");
-            for (i = 0; i < G->V; ++i) printf ("%2d%c", arr[i], (i == G->V - 1) ? '\n' : ' ');
+            for (i = 0; i < V; ++i) printf ("%2d%c", arr[i], (i == V - 1) ? '\n' : ' ');
             free (arr);
             break;
 
         case 26:
             printf ("int GRAPHscK (Graph G, int *sc)\n");
-            arr = malloc (G->V * sizeof (int));
-            printf ("components: %2d", GRAPHscK (G, arr));
+            arr = malloc (V * sizeof (int));
+            printf ("components: %2d\n", GRAPHscK (G, arr));
             printf ("v           ");
-            for (i = 0; i < G->V; ++i) printf ("%2d%c", i, (i == G->V - 1) ? '\n' : ' ');
+            for (i = 0; i < V; ++i) printf ("%2d%c", i, (i == V - 1) ? '\n' : ' ');
             printf ("sc          ");
-            for (i = 0; i < G->V; ++i) printf ("%2d%c", arr[i], (i == G->V - 1) ? '\n' : ' ');
+            for (i = 0; i < V; ++i) printf ("%2d%c", arr[i], (i == V - 1) ? '\n' : ' ');
             free (arr);
             break;
 
@@ -305,16 +311,16 @@ int main () {
 
         case 30:
             printf ("bool GRAPHisTopoNumbering (Graph G, int *topo)\n");
-            arr = malloc (G->V * sizeof (int));
-            for (i = 0; i < G->V; ++i) error |= scanf (" %d", &arr[i]);
+            arr = malloc (V * sizeof (int));
+            for (i = 0; i < V; ++i) error |= scanf (" %d", &arr[i]);
             printf (GRAPHisTopoNumbering (G, arr) ? "Yes\n" : "No\n");
             free (arr);
             break;
 
         case 31:
             printf ("bool GRAPHisTopoOrder (Graph G, vertex *vv)\n");
-            arr = malloc (G->V * sizeof (int));
-            for (i = 0; i < G->V; ++i) error |= scanf (" %d", &arr[i]);
+            arr = malloc (V * sizeof (int));
+            for (i = 0; i < V; ++i) error |= scanf (" %d", &arr[i]);
             printf (GRAPHisTopoOrder (G, arr) ? "Yes\n" : "No\n");
             free (arr);
             break;
@@ -347,6 +353,46 @@ int main () {
             break;
 
         case 37:
+            printf ("void GRAPHminPaths (Graph G, vertex s, int *pred, int *dist)\n");
+            error |= scanf (" %d", &v);
+            arr = malloc (V * sizeof (int));
+            arr2 = malloc (V * sizeof (int));
+            GRAPHminPaths (G, v, arr, arr2);
+            S = STACKinit (V);
+            for (v = 0; v < V; ++v) {
+                if (arr[v] >= 0) {
+                    printf (" dist[%d] = %d: ", v, arr2[v]);
+                    for (w = v; w != arr[w]; STACKput (S, w), w = arr[w]);
+                    for (printf ("%2d", w); !STACKempty (S); printf (" %2d", STACKget (S)));
+                    printf ("\n");
+                }
+            }
+            STACKfree (S);
+            free (arr);
+            free (arr2);
+            break;
+
+        case 38:
+            printf ("void GRAPHsave (Graph G, FILE * out)\n");
+            file = type_file (file);
+            if (strlen (file) > 0) {
+                out = fopen (file, "w");
+                GRAPHsave (G, out);
+                fclose (out);
+            }
+            break;
+
+        case 39:
+            printf ("int GRAPHvertices (Graph G)\n");
+            printf (" %d\n", GRAPHvertices (G));
+            break;
+
+        case 40:
+            printf ("int GRAPHarcs (Graph G)\n");
+            printf (" %d\n", GRAPHarcs (G));
+            break;
+
+        case 41:
             jump = true;
         }
     }

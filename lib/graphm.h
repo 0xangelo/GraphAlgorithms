@@ -7,6 +7,7 @@
 #include <ctype.h>
 #include <time.h>
 #include "queue.h"
+#include "stack.h"
 
 /* Vértices de grafos são representados por objetos do tipo vertex. */
 #define vertex int
@@ -14,23 +15,7 @@
    humano que o grafo é não-dirigido. */
 #define UGraph Graph
 
-/* REPRESENTAÇÃO POR MATRIZ DE ADJACÊNCIAS: A estrutura graph representa
-   um grafo. O campo adj é um ponteiro para a matriz de adjacências do 
-   grafo. O campo V contém o número de vértices e o campo A contém o 
-   número de arcos do grafo. */
-struct graph {
-    int V; 
-    int A; 
-    int **adj;
-    int *pre;
-    int *post;
-    int *pred;
-    int *low;
-    int *num;
-};
-
-/* Um Graph é um ponteiro para um graph, ou seja, um Graph contém o
-   endereço de um graph. */
+/* Um Graph é um ponteiro para um graph. */
 typedef struct graph *Graph;
 
 Graph GRAPHinit (int V); 
@@ -50,10 +35,13 @@ void UGRAPHinsertArc (Graph G, vertex v, vertex w);
 void GRAPHremoveArc (Graph G, vertex v, vertex w); 
 void GRAPHdfs (Graph G);
 void GRAPHbfs (Graph G, vertex s);
+void GRAPHminPaths (Graph G, vertex s, int *pred, int *dist);
 void GRAPHtopoOrder (Graph G, int *vv);
 void GRAPHpath (Graph G, vertex s, vertex t);
 void UGRAPHbridges (UGraph G);
 
+int GRAPHvertices (Graph G);
+int GRAPHarcs (Graph G);
 int GRAPHindeg (Graph G, vertex v);
 int GRAPHoutdeg (Graph G, vertex v);
 int GRAPHrootedForestHeight (Graph G, vertex *p);
@@ -73,6 +61,7 @@ bool UGRAPHisConnected (UGraph G);
 
 void GRAPHshow (Graph G); 
 void UGRAPHshowKnight (Graph G, int i, int j);
+void GRAPHsave (Graph G, FILE * out);
 
 void GRAPHfree (Graph G);
 

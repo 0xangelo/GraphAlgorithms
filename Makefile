@@ -1,4 +1,4 @@
-CFLAGS= -Wall -std=c99 -ansi -pedantic -O2 -iquote lib/ -L./lib/ -lprompt -lreadline -lqueue
+CFLAGS= -Wall -std=c99 -ansi -pedantic -O2 -iquote lib/ -L./lib/ -lprompt -lreadline -lqueue -lstack
 CC= gcc
 
 OBJDIR := bin

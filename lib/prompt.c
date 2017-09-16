@@ -37,6 +37,10 @@ char *func_names[] = {
     "isConnected",
     "show",
     "showKnight",
+    "minPaths",
+    "save",
+    "vertices",
+    "arcs",
     "quit",
     NULL
 };
