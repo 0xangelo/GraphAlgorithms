@@ -763,10 +763,10 @@ bool GRAPHreach (Graph G, vertex s, vertex t) {
 /* A função cycleR() devolve TRUE se encontra um ciclo ao percorrer G a partir
    do vértice v e devolve FALSE em caso contrário. */
 static bool cycleR (Graph G, vertex v) {
-    link a;
+    vertex w; link a;
     G->pre[v] = G->cnt1++;
     for (a = G->adj[v]; a != NULL; a = a->next) {
-        vertex w = a->w;
+        w = a->w;
         if (G->pre[w] == -1) {
             if (cycleR (G, w))
                 return true;
