@@ -4,6 +4,51 @@
 #include "prompt.h"
 #include GRAPH
 
+char *func_names[] = {
+    "init", 
+    "inputArcs",
+    "inputLists",
+    "inputArcsFile",
+    "inputListsFile",
+    "knight",
+    "buildComplete",
+    "rand1",
+    "rand2",
+    "randU",
+    "insertArc",
+    "insertUArc",
+    "removeArc",
+    "dfs",
+    "bfs",
+    "topoOrder",
+    "path",
+    "bridges",
+    "indeg",
+    "outdeg",
+    "rootedForestHeight",
+    "dfsForestHeight",
+    "cc",
+    "ccAdd",
+    "scT",
+    "scK",
+    "isUndirected",
+    "isolated",
+    "adj",
+    "isTopoNumbering",
+    "isTopoOrder",
+    "reach",
+    "hasCycle",
+    "isConnected",
+    "show",
+    "showKnight",
+    "minPaths",
+    "save",
+    "vertices",
+    "arcs",
+    "quit",
+    NULL
+};
+
 int main () {
     Graph G = GRAPHinit (1);
     Stack S;
@@ -13,6 +58,7 @@ int main () {
     int error = 0, V, A, E, func, i;
     char *file = NULL, *command = NULL;
     bool jump = false;
+    prompt_init (func_names);
     
     while (!jump) {
         command = type_prompt (command);

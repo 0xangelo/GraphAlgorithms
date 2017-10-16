@@ -6,8 +6,12 @@ default:
 	ar -cvq libprompt.a prompt.o
 	ar -cvq libqueue.a queue.o
 	ar -cvq libstack.a stack.o
+	ar -cvq libwgraphl.a wgraphl.o
+	ar -cvq libpriority_queue.a priority_queue.o
 	ranlib libgraphm.a
 	ranlib libgraphl.a
 	ranlib libprompt.a
 	ranlib libqueue.a
 	ranlib libstack.a
+	ranlib libwgraphl.a
+	ranlib libpriority_queue.a

@@ -1,53 +1,15 @@
 #include "prompt.h"
 
-char *func_names[] = {
-    "init", 
-    "inputArcs",
-    "inputLists",
-    "inputArcsFile",
-    "inputListsFile",
-    "knight",
-    "buildComplete",
-    "rand1",
-    "rand2",
-    "randU",
-    "insertArc",
-    "insertUArc",
-    "removeArc",
-    "dfs",
-    "bfs",
-    "topoOrder",
-    "path",
-    "bridges",
-    "indeg",
-    "outdeg",
-    "rootedForestHeight",
-    "dfsForestHeight",
-    "cc",
-    "ccAdd",
-    "scT",
-    "scK",
-    "isUndirected",
-    "isolated",
-    "adj",
-    "isTopoNumbering",
-    "isTopoOrder",
-    "reach",
-    "hasCycle",
-    "isConnected",
-    "show",
-    "showKnight",
-    "minPaths",
-    "save",
-    "vertices",
-    "arcs",
-    "quit",
-    NULL
-};
+char **func_names;
+
 static char *line = (char *) NULL;
 
 static char **function_name_completion (const char *, int, int);
 static char *function_name_generator (const char *, int);
+
+void prompt_init (char **names) {
+    func_names = names;
+}
 
 char *type_prompt (char *command) {
     rl_attempted_completion_function = function_name_completion;

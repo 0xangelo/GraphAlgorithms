@@ -7,8 +7,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-extern char *func_names[];
-
+void prompt_init (char **names);
 char *strdup (const char *s);
 char *strndup (const char *s, size_t n);
 char *type_prompt (char *command);

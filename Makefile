@@ -1,22 +1,27 @@
-CFLAGS= -Wall -std=c99 -ansi -pedantic -O2 -iquote lib/ -L./lib/ -lprompt -lreadline -lqueue -lstack
+CFLAGS= -Wall -std=c99 -ansi -pedantic -O2 -iquote lib/ -L./lib/ -lprompt -lreadline
 CC= gcc
 
 OBJDIR := bin
-LIBDIR := lib/*.a
 
 .PRECIOUS: bin/%M.out bin/%L.out
 
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
-%M: $(OBJDIR)/%M.out | $(OBJDIR) $(LIBDIR)
+GraphM: $(OBJDIR)/GraphM.out | $(OBJDIR)
 	./$<
 
-$(OBJDIR)/%M.out: %.c
-	${CC} -o $@ -D'GRAPH="graphm.h"' $^ -lgraphm ${CFLAGS}
+$(OBJDIR)/GraphM.out: Graph.c
+	${CC} -o $@ -D'GRAPH="graphm.h"' $^ -lgraphm ${CFLAGS} -lqueue -lstack
 
-%L: $(OBJDIR)/%L.out | $(OBJDIR) $(LIBDIR)
+GraphL: $(OBJDIR)/GraphL.out | $(OBJDIR)
 	./$<
 
-$(OBJDIR)/%L.out: %.c
-	${CC} -o $@ -D'GRAPH="graphl.h"' $^ -lgraphl ${CFLAGS}
+$(OBJDIR)/GraphL.out: Graph.c
+	${CC} -o $@ -D'GRAPH="graphl.h"' $^ -lgraphl ${CFLAGS} -lqueue -lstack
+
+WGraphL: $(OBJDIR)/WGraphL.out | $(OBJDIR)
+	./$<
+
+$(OBJDIR)/WGraphL.out: WGraph.c
+	${CC} -o $@ -D'GRAPH="wgraphl.h"' $^ -lwgraphl ${CFLAGS} -lpriority_queue
