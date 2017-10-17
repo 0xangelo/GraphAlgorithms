@@ -10,6 +10,25 @@ struct node {
     link next; 
 };
 
+static arc ARC( vertex v, vertex w, int cst) {
+   arc a;
+   a.v = v, a.w = w;
+   a.cst = cst;
+   return a;
+}
+
+typedef struct { 
+    vertex v, w; 
+    int cst; 
+} edge;
+
+/* static edge EDGE( vertex v, vertex w, int cst) { */
+/*    edge e; */
+/*    e.v = v, e.w = w; */
+/*    e.cst = cst; */
+/*    return e; */
+/* } */
+
 /* REPRESENTAÇÃO POR LISTAS DE ADJACÊNCIA: A estrutura graph representa um grafo.
    O campo adj é um ponteiro para o vetor de listas de adjacência, o campo V 
    contém o número de vértices e o campo A contém o número de arcos do grafo. */
@@ -17,12 +36,6 @@ struct graph {
     int V; 
     int A; 
     link *adj;
-    int cnt1;
-    int cnt2;
-    int *pre;
-    int *post;
-    int *pred;
-    int *low;
 };
 
 
@@ -34,6 +47,16 @@ static link NEWnode (vertex w, int cst, link next) {
     a->cst = cst;
     a->next = next;    
     return a;                        
+}
+
+static void freeList (link a) {
+    link b;
+    while (a != NULL) {
+        b = a->next;
+        free (a);
+        a = b;
+    }
+ 
 }
 
 /* REPRESENTAÇÃO POR LISTAS DE ADJACÊNCIA: A função GRAPHinit() constrói um
@@ -121,6 +144,17 @@ Graph GRAPHrand2 (int V, int A, int cmin, int cmax) {
     return G;
 }
 
+/* Constrói o inverso do grafo G. */
+Graph GRAPHreverse (Graph G) {
+    vertex v; link a;
+    Graph GR = GRAPHinit (G->V);
+    for (v = 0; v < G->V; ++v)
+        for (a = G->adj[v]; a != NULL; a = a->next) {
+            GRAPHinsertArc (GR, a->w, v, a->cst);
+        }
+    return GR;
+}
+
 UGraph UGRAPHrandU (int V, int E, int cmin, int cmax) {
     double prob = (double) E / V / (V-1);
     UGraph G = GRAPHinit (V);
@@ -187,6 +221,15 @@ int GRAPHvertices (Graph G) {
 
 int GRAPHarcs (Graph G) {
     return G->A;
+}
+
+arc *GRAPHallArcs (Graph G) {
+    vertex v; link a; int n = 0;
+    arc *list = malloc (G->A * sizeof (arc));
+    for (v = 0; v < G->V; ++v) 
+        for (a = G->adj[v]; a != NULL; a = a->next)
+            list[n++] = ARC (v, a->w, a->cst);
+    return list;
 }
 
 /* Recebe um grafo G com custos positivos nos arcos e um vértice s. Armazena no 
@@ -315,6 +358,33 @@ int GRAPHdistSet (Graph G, bool *S, bool *T) {
     return y;
 }
 
+arc GRAPHcriticalArc (Graph G, vertex s, vertex t) {
+    Graph GR = GRAPHreverse (G);
+    vertex v, w, x, y; link a;
+    int *parent = malloc (G->V * sizeof (vertex));
+    int *dist = malloc (G->V * sizeof (vertex));
+    int cst, red_cst, min_cst, max_cst = -INFINITY;
+
+    GRAPHspt2 (G, s, parent, dist);
+
+    for (w = t; w != parent[w]; w = parent[w]) {
+        min_cst = INFINITY;
+        for (a = GR->adj[w]; a != NULL; a = a->next) {
+            v = a->w;
+            cst = a->cst;
+            if (v == parent[w]) continue;
+            red_cst = (dist[v] == INFINITY) ? INFINITY : dist[v] + cst - dist[w];
+            if (red_cst < min_cst) min_cst = red_cst;
+        }
+        if (min_cst > max_cst) max_cst = min_cst, x = parent[w], y = w;
+    }
+
+    GRAPHfree (GR);
+    free (parent);
+    free (dist);
+    return ARC (x, y, dist[y] - dist[x]);
+}
+
 void GRAPHshow (Graph G) {
     vertex v;
     link a;
@@ -334,15 +404,8 @@ void GRAPHsave (Graph G, FILE * out) {
 
 void GRAPHfree (Graph G) {
     vertex v;
-    link a, b;
-    for (v = 0; v < G->V; ++v) {
-        a = G->adj[v];
-        while (a != NULL) {
-            b = a->next;
-            free (a);
-            a = b;
-        }
-    }
+    for (v = 0; v < G->V; ++v)
+        freeList (G->adj[v]);
     free (G->adj);
     free (G);
 }

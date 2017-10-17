@@ -22,6 +22,8 @@ char *func_names[] = {
     "spt1",
     "spt2",
     "distSet",
+    "criticalArc",
+    "reverse",
     "quit",
     NULL
 };
@@ -31,6 +33,7 @@ int main () {
     FILE * in, * out;
     vertex *parent, *dist;
     vertex v, w;
+    arc vw;
     int V, A, E;
     int func, i;
     int cmin, cmax;
@@ -268,6 +271,20 @@ int main () {
             break;
 
         case 18:
+            printf ("arc GRAPHcriticalArc (Graph G, vertex s, vertex t)\n");
+            scanf (" %d %d", &v, &w);
+            vw = GRAPHcriticalArc (G, v, w);
+            printf (" %d %d %d\n", vw.v, vw.w, vw.cst);
+            break;
+
+        case 19:
+            printf ("Graph GRAPHreverse (Graph G)\n");
+            G = GRAPHreverse (G);
+            V = GRAPHvertices (G);
+            A = GRAPHarcs (G);
+            break;
+
+        case 20:
             jump = true;
         }
     }

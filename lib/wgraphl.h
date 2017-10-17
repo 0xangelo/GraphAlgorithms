@@ -21,11 +21,17 @@
 /* Um Graph é um ponteiro para um graph. */
 typedef struct graph *Graph;
 
+typedef struct { 
+    vertex v, w; 
+    int cst; 
+} arc;
+
 Graph GRAPHinit (int V); 
 Graph GRAPHinputArcs (void);
 Graph GRAPHinputArcsFile (FILE *in);
 Graph GRAPHrand1 (int V, int A, int cmin, int cmax);
 Graph GRAPHrand2 (int V, int A, int cmin, int cmax);
+Graph GRAPHreverse (Graph G);
 UGraph UGRAPHrandU (int V, int E, int cmin, int cmax);
 UGraph UGRAPHrandGrid (int N, int cmin, int cmax);
 
@@ -39,6 +45,7 @@ int GRAPHarcs (Graph G);
 void GRAPHspt1 (Graph G, vertex s, vertex *parent, int *dist);
 void GRAPHspt2 (Graph G, vertex s, vertex *parent, int *dist);
 int GRAPHdistSet (Graph G, bool *S, bool *T);
+arc GRAPHcriticalArc (Graph G, vertex s, vertex t);
 
 void GRAPHshow (Graph G); 
 void GRAPHsave (Graph G, FILE * out);
