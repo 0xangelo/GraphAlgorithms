@@ -273,6 +273,48 @@ void GRAPHspt2 (Graph G, vertex s, vertex *parent, int *dist) {
     free (hook);
 }
 
+int GRAPHdistSet (Graph G, bool *S, bool *T) {
+    vertex *hook = malloc (G->V * sizeof (vertex));
+    vertex v, y, w; int cst; link a;
+    PriorityQueue Q;
+    
+    /* inicialização: */
+    int *parent = malloc (G->V * sizeof (vertex));
+    int *dist = malloc (G->V * sizeof (vertex));
+    Q = PQinit (G->V);
+    for (v = 0; v < G->V; ++v)
+        if (S[v]) hook[v] = v, dist[v] = 0, PQinsert (Q, v, dist);
+        else parent[v] = -1, dist[v] = INFINITY;
+
+    while (!PQempty (Q)) {
+        y = PQdelMin (Q, dist);
+        parent[y] = hook[y];
+        /* atualização de dist[]: */
+        for (a = G->adj[y]; a != NULL; a = a->next) {
+            w = a->w;
+            cst = a->cst;
+            if (dist[w] == INFINITY) {
+                dist[w] = dist[y] + cst; /* relaxa y-w */
+                PQinsert (Q, w, dist);
+                hook[w] = y;
+            }
+            else if (!(dist[y] + cst >= dist[w])) {
+                dist[w] = dist[y] + cst; /* relaxa y-w */
+                PQdec (Q, w, dist);
+                hook[w] = y;
+            }
+        }
+    }
+    for (y = INFINITY, v = 0; v < G->V; ++v)
+        if (T[v] && (y == INFINITY || dist[v] < y)) y = dist[v];
+
+    PQfree (Q);
+    free (hook);
+    free (parent);
+    free (dist);
+    return y;
+}
+
 void GRAPHshow (Graph G) {
     vertex v;
     link a;

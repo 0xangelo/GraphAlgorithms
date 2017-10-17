@@ -36,6 +36,10 @@ void GRAPHremoveArc (Graph G, vertex v, vertex w);
 int GRAPHvertices (Graph G);
 int GRAPHarcs (Graph G);
 
+void GRAPHspt1 (Graph G, vertex s, vertex *parent, int *dist);
+void GRAPHspt2 (Graph G, vertex s, vertex *parent, int *dist);
+int GRAPHdistSet (Graph G, bool *S, bool *T);
+
 void GRAPHshow (Graph G); 
 void GRAPHsave (Graph G, FILE * out);
     

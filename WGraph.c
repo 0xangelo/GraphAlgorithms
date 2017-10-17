@@ -19,6 +19,9 @@ char *func_names[] = {
     "arcs",
     "show",
     "save",
+    "spt1",
+    "spt2",
+    "distSet",
     "quit",
     NULL
 };
@@ -26,10 +29,16 @@ char *func_names[] = {
 int main () {
     Graph G = GRAPHinit (1);
     FILE * in, * out;
+    vertex *parent, *dist;
     vertex v, w;
-    int V, A, E, func, i, cmin, cmax;
+    int V, A, E;
+    int func, i;
+    int cmin, cmax;
+    int insert, error = 0;
     char *file = NULL, *command = NULL;
+    char c;
     bool jump = false;
+    bool *S, *T;
     prompt_init (func_names);
     
     while (!jump) {
@@ -182,6 +191,83 @@ int main () {
             break;
 
         case 15:
+            printf ("void GRAPHspt1 (Graph G, vertex s, vertex *parent, int *dist)\n");
+            parent = malloc (V * sizeof (vertex));
+            dist = malloc (V * sizeof (vertex));
+            scanf (" %d", &v);
+            GRAPHspt1 (G, v, parent, dist);
+            for (printf ("v     "), v = 0; v < V; ++v)
+                printf ("%2d%c", v, (v == V - 1) ? '\n' : ' ');
+    
+            for (printf ("dist  "), v = 0; v < V; ++v)
+                printf ("%2d%c", dist[v], (v == V - 1) ? '\n' : ' ');
+    
+            for (printf ("parent"), v = 0; v < V; ++v)
+                printf ("%2d%c", parent[v], (v == V - 1) ? '\n' : ' ');
+            
+            free (parent);
+            free (dist);
+            break;
+
+        case 16:
+            printf ("void GRAPHspt2 (Graph G, vertex s, vertex *parent, int *dist)\n");
+            parent = malloc (V * sizeof (vertex));
+            dist = malloc (V * sizeof (vertex));
+            scanf (" %d", &v);
+            GRAPHspt2 (G, v, parent, dist);
+            for (printf ("v     "), v = 0; v < V; ++v)
+                printf ("%2d%c", v, (v == V - 1) ? '\n' : ' ');
+    
+            for (printf ("dist  "), v = 0; v < V; ++v)
+                printf ("%2d%c", dist[v], (v == V - 1) ? '\n' : ' ');
+    
+            for (printf ("parent"), v = 0; v < V; ++v)
+                printf ("%2d%c", parent[v], (v == V - 1) ? '\n' : ' ');
+            
+            free (parent);
+            free (dist);
+            break;
+
+        case 17:
+            printf ("int GRAPHdistSet (Graph G, bool *S, bool *T)\n");
+            S = malloc (V * sizeof (bool));
+            T = malloc (V * sizeof (bool));
+            for (v = 0; v < V; ++v) S[v] = T[v] = false;
+
+            printf ("Vertices in S: ");
+            w = c = insert = 0;
+            while (c != '\n') {
+                error |= scanf ("%c", &c);
+                while (isdigit(c)) {
+                    insert = 1;
+                    w *= 10;
+                    w += c - '0';
+                    error |= scanf ("%c", &c);
+                }
+                if (insert) S[w] = true;
+                w = insert = 0;
+            }
+            
+            printf ("Vertices in T: ");
+            w = c = insert = 0;
+            while (c != '\n') {
+                error |= scanf ("%c", &c);
+                while (isdigit(c)) {
+                    insert = 1;
+                    w *= 10;
+                    w += c - '0';
+                    error |= scanf ("%c", &c);
+                }
+                if (insert) T[w] = true;
+                w = insert = 0;
+            }
+
+            printf (" %d\n", GRAPHdistSet (G, S, T));
+            free (S);
+            free (T);
+            break;
+
+        case 18:
             jump = true;
         }
     }
