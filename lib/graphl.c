@@ -562,6 +562,28 @@ int UGRAPHcc (UGraph G, int *cc) {
     return id;
 }
 
+int UGRAPHccBfs (UGraph G, int *cc) {
+    vertex v, y; int id = -1;
+    link a; Queue Q;
+    for (v = 0; v < G->V; ++v)
+        cc[v] = -1;
+    Q = QUEUEinit (G->V);
+
+    for (v = 0; v < G->V; ++v)
+        if (cc[v] == -1)
+            for (QUEUEput (Q, v), cc[v] = ++id; !QUEUEempty (Q); ) {
+                y = QUEUEget (Q);
+                for (a = G->adj[y]; a != NULL; a = a->next)
+                    if (cc[a->w] == -1) {
+                        cc[a->w] = id;
+                        QUEUEput (Q, a->w);
+                    }
+            }
+
+    QUEUEfree (Q);
+    return id + 1;
+}
+
 int UGRAPHccAdd (UGraph G, int *cc, vertex v, vertex w) {
     vertex s; int id = 0, idv = cc[v], idw = cc[w];
     for (s = 0; s < G->V; ++s)

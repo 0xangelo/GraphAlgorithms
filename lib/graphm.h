@@ -35,6 +35,7 @@ void UGRAPHinsertArc (Graph G, vertex v, vertex w);
 void GRAPHremoveArc (Graph G, vertex v, vertex w); 
 void GRAPHdfs (Graph G);
 void GRAPHbfs (Graph G, vertex s);
+int UGRAPHccBfs (UGraph G, int *cc);
 void GRAPHminPaths (Graph G, vertex s, int *pred, int *dist);
 void GRAPHtopoOrder (Graph G, int *vv);
 void GRAPHpath (Graph G, vertex s, vertex t);

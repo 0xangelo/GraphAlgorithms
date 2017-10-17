@@ -47,6 +47,7 @@ int GRAPHoutdeg (Graph G, vertex v);
 int GRAPHrootedForestHeight (Graph G, vertex *p);
 int GRAPHdfsForestHeight (Graph G);
 int UGRAPHcc (UGraph G, int *cc);
+int UGRAPHccBfs (UGraph G, int *cc);
 int UGRAPHccAdd (UGraph G, int *cc, vertex v, vertex w);
 int GRAPHscT (Graph G, int *sc);
 int GRAPHscK (Graph G, int *sc);

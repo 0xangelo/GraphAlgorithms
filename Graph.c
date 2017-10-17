@@ -45,6 +45,7 @@ char *func_names[] = {
     "save",
     "vertices",
     "arcs",
+    "ccBfs",
     "quit",
     NULL
 };
@@ -439,6 +440,17 @@ int main () {
             break;
 
         case 41:
+            printf ("int UGRAPHccBfs (UGraph G, int *cc)\n");
+            arr = malloc (V * sizeof (int));
+            printf ("components: %2d\n", UGRAPHccBfs (G, arr));
+            printf ("v           ");
+            for (i = 0; i < V; ++i) printf ("%2d%c", i, (i == V - 1) ? '\n' : ' ');
+            printf ("cc          ");
+            for (i = 0; i < V; ++i) printf ("%2d%c", arr[i], (i == V - 1) ? '\n' : ' ');
+            free (arr);
+            break;
+
+        case 42:
             jump = true;
         }
     }
