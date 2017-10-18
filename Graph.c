@@ -51,6 +51,8 @@ char *func_names[] = {
     "reverse",
     "sequentialColoring",
     "twoColor",
+    "isMatching",
+    "bipartiteMatching",
     "quit",
     NULL
 };
@@ -507,6 +509,30 @@ int main () {
             break;
 
         case 47:
+            printf ("bool UGRAPHisMatching (UGraph G, vertex *match)\n");
+            arr = malloc (V * sizeof (int));
+            for (v = 0; v < V; ++v) scanf (" %d", &arr[v]);
+            printf (UGRAPHisMatching (G, arr) ? "Yes\n" : "No\n");
+            free (arr);
+            break;
+
+        case 48:
+            printf ("int UGRAPHbipartiteMatching (UGraph G, int *color, vertex *match, bool bfs)\n");
+            arr = malloc (V * sizeof (int));
+            if (UGRAPHtwoColor (G, arr)) {
+                arr2 = malloc (V * sizeof (int));
+                printf ("matching size: %2d\n", UGRAPHbipartiteMatching (G, arr, arr2, true));
+                printf ("v           ");
+                for (i = 0; i < V; ++i) printf ("%2d%c", i, (i == V - 1) ? '\n' : ' ');
+                printf ("match       ");
+                for (i = 0; i < V; ++i) printf ("%2d%c", arr2[i], (i == V - 1) ? '\n' : ' ');
+                free (arr2);
+            }
+            else printf ("Graph is not bipartite\n");
+            free (arr);
+            break;
+
+        case 49:
             jump = true;
         }
     }

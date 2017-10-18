@@ -769,7 +769,7 @@ static void newMatching (Graph G, vertex *match, vertex t) {
    TRUE e modifica match[] de acordo. Se fracassar, devolve false sem alterar 
    match[]. (A função usa a estratégia de busca em largura. Esse código não está
    no livro de Sedgewick.) */
-static bool augmentMatching (UGraph G, int *color, vertex *match) { 
+static bool augmentMatchingBfs (UGraph G, int *color, vertex *match) { 
     vertex v, s;
     Queue Q = QUEUEinit (G->V);
     initDfs (G);
@@ -810,18 +810,63 @@ static bool augmentMatching (UGraph G, int *color, vertex *match) {
     return false;
 }
 
+static bool dfsRaugment (Graph G, vertex v, vertex *match) {
+    vertex w, ww;
+    link a;
+    G->pre[v] = 1;
+    for (a = G->adj[v]; a != NULL; a = a->next) {
+        w = a->w; /* color[w] = 1 */
+        if (G->pre[w] == 0) {
+            G->pre[w] = 1;
+            if (match[w] == -1) { /* w solteiro */
+                match[w] = v;
+                match[v] = w;
+                return true; 
+            }
+            ww = match[w]; /* color[ww] = 0 */
+            if (dfsRaugment (G, ww, match)) {
+                match[w] = v;
+                match[v] = w;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+/* Esta função recebe um grafo não-dirigido bipartido G, com bicoloração 
+   color[], e um emparelhamento M representado por match[]. A função procura 
+   calcular um emparelhamento maior que M. Se tiver sucesso, devolve true e 
+   modifica match[] de acordo. Se fracassar, devolve false sem alterar match[].
+   (A função usa a estratégia de busca em profundidade. Esse código não está no 
+   livro de Sedgewick.) */
+static bool augmentMatchingDfs (UGraph G, int *color, vertex *match) { 
+    vertex v, s;
+    initDfs (G);
+    for (s = 0; s < G->V; ++s) G->pre[s] = 0;
+    for (v = 0; v < G->V; ++v) 
+        if (color[v] == 0 && match[v] == -1 && G->pre[v] == 0)
+            if (dfsRaugment (G, v, match)) {
+                freeDfs (G);
+                return true;
+            }
+    freeDfs (G);
+    return false;
+}
+
 /* A função UGRAPHbipartiteMatching() calcula um emparelhamento máximo M no 
    grafo não-dirigido bipartido G. A bipartição de G é dada pelo vetor 
    color[0..V-1], que tem valores 0 e 1. A função devolve o tamanho de M e 
    armazena uma representação de M no vetor match[0..V-1], alocado pelo usuário:
    para cada vértice v, match[v] é o vértice que M casa com v (ou -1 se v é 
    solteiro). (Esse código não está no livro de Sedgewick.) */
-int UGRAPHbipartiteMatching (UGraph G, int *color, vertex *match) { 
+int UGRAPHbipartiteMatching (UGraph G, int *color, vertex *match, bool bfs) { 
     vertex v;
     int size;
     for (v = 0; v < G->V; ++v) match[v] = -1;
     size = 0;
-    while (augmentMatching (G, color, match))
+    while ((bfs && augmentMatchingBfs (G, color, match)) ||
+           (!bfs && augmentMatchingDfs (G, color, match)))
         size++;
     return size;
 }
@@ -992,13 +1037,9 @@ bool UGRAPHtwoColor (UGraph G, int *color) {
 
 bool UGRAPHisMatching (UGraph G, vertex *match) {
     vertex v;
-    bool *visited = malloc (G->V * sizeof (bool));
     for (v = 0; v < G->V; ++v)
-        if (match[v] != -1) {
-            if (visited[v] || visited[match[v]]) return false;
-            visited[v] = visited[match[v]] = true;
-        }
-    free (visited);
+        if (match[v] != -1 && match[match[v]] != v)
+            return false;
     return true;
 }
 

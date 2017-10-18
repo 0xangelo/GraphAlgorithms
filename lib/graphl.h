@@ -54,6 +54,7 @@ int UGRAPHccAdd (UGraph G, int *cc, vertex v, vertex w);
 int GRAPHscT (Graph G, int *sc);
 int GRAPHscK (Graph G, int *sc);
 int UGRAPHsequentialColoring (UGraph G, int *color);
+int UGRAPHbipartiteMatching (UGraph G, int *color, vertex *match, bool bfs);
 
 bool GRAPHisUndirected (Graph G);
 bool GRAPHisolated (Graph G, vertex v);
