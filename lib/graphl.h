@@ -64,6 +64,7 @@ bool GRAPHreach (Graph G, vertex s, vertex t);
 bool GRAPHhasCycle (Graph G);
 bool UGRAPHisConnected (UGraph G);
 bool UGRAPHtwoColor (UGraph G, int *color);
+bool UGRAPHisMatching (UGraph G, vertex *match);
 
 void GRAPHshow (Graph G); 
 void UGRAPHshowKnight (Graph G, int i, int j);

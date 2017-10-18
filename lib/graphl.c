@@ -749,6 +749,83 @@ int UGRAPHsequentialColoring (UGraph G, int *color) {
     return k;
 }
 
+/* A função newMatching() executa a operação M⊕P sobre um emparelhamento M e um
+   caminho aumentador P. O emparelhamento M é representado pelo vetor 
+   match[0..V-1]. O caminho P termina no vértice t e é representado por 
+   parent[]. A origem s de P é caracterizada pela propriedade parent[s] == s. */
+static void newMatching (Graph G, vertex *match, vertex t) { 
+    vertex x;
+    do {
+        x = G->pred[t];
+        match[t] = x;
+        match[x] = t;
+        t = G->pred[x]; 
+    } while (t != x);
+}
+
+/* Esta função recebe um grafo não-dirigido bipartido G, com bicoloração 
+   color[0..V-1], e um emparelhamento M representado por match[0..V-1]. A função
+   procura calcular um emparelhamento maior que M. Se tiver sucesso, devolve 
+   TRUE e modifica match[] de acordo. Se fracassar, devolve false sem alterar 
+   match[]. (A função usa a estratégia de busca em largura. Esse código não está
+   no livro de Sedgewick.) */
+static bool augmentMatching (UGraph G, int *color, vertex *match) { 
+    vertex v, s;
+    Queue Q = QUEUEinit (G->V);
+    initDfs (G);
+    for (v = 0; v < G->V; ++v) G->pre[v] = 0;
+    for (s = 0; s < G->V; ++s) {
+        if (color[s] == 0 && match[s] == -1) {
+            G->pre[s] = 1; 
+            G->pred[s] = s;
+            QUEUEput (Q, s); 
+        }
+    } 
+    /* a fila contém todos os vértices solteiros de cor 0 */
+
+    while (!QUEUEempty (Q)) { 
+        /* todos os vértices da fila têm cor 0 */
+        vertex w, x;
+        link a;
+        v = QUEUEget (Q);
+        for (a = G->adj[v]; a != NULL; a = a->next) {
+            w = a->w; /* cor[w] == 1 */
+            if (G->pre[w] == 0) { 
+                G->pre[w] = 1; 
+                G->pred[w] = v; 
+                if (match[w] == -1) {
+                    newMatching (G, match, w);
+                    QUEUEfree (Q); freeDfs (G);
+                    return true;
+                }
+                x = match[w]; /* cor[x] == 0 e visit[x] == 0 */
+                G->pre[x] = 1;
+                G->pred[x] = w; /* caminho ganhou segmento v-w-x */
+                QUEUEput (Q, x); 
+            }
+        }
+    }
+
+    QUEUEfree (Q); freeDfs (G);
+    return false;
+}
+
+/* A função UGRAPHbipartiteMatching() calcula um emparelhamento máximo M no 
+   grafo não-dirigido bipartido G. A bipartição de G é dada pelo vetor 
+   color[0..V-1], que tem valores 0 e 1. A função devolve o tamanho de M e 
+   armazena uma representação de M no vetor match[0..V-1], alocado pelo usuário:
+   para cada vértice v, match[v] é o vértice que M casa com v (ou -1 se v é 
+   solteiro). (Esse código não está no livro de Sedgewick.) */
+int UGRAPHbipartiteMatching (UGraph G, int *color, vertex *match) { 
+    vertex v;
+    int size;
+    for (v = 0; v < G->V; ++v) match[v] = -1;
+    size = 0;
+    while (augmentMatching (G, color, match))
+        size++;
+    return size;
+}
+
 bool GRAPHisUndirected (Graph G) {
     int i, w;
     link a, b;
@@ -834,8 +911,8 @@ bool GRAPHreach (Graph G, vertex s, vertex t) {
     return v == t;
 }
 
-/* A função cycleR() devolve TRUE se encontra um ciclo ao percorrer G a partir
-   do vértice v e devolve FALSE em caso contrário. */
+/* A função cycleR() devolve true se encontra um ciclo ao percorrer G a partir
+   do vértice v e devolve false em caso contrário. */
 static bool cycleR (Graph G, vertex v) {
     vertex w; link a;
     G->pre[v] = G->cnt1++;
@@ -910,6 +987,18 @@ bool UGRAPHtwoColor (UGraph G, int *color) {
         if (color[v] == -1) /* começa nova etapa */
             if (dfsRcolor (G, v, color, 0) == false) 
                 return false;
+    return true;
+}
+
+bool UGRAPHisMatching (UGraph G, vertex *match) {
+    vertex v;
+    bool *visited = malloc (G->V * sizeof (bool));
+    for (v = 0; v < G->V; ++v)
+        if (match[v] != -1) {
+            if (visited[v] || visited[match[v]]) return false;
+            visited[v] = visited[match[v]] = true;
+        }
+    free (visited);
     return true;
 }
 
