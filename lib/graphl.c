@@ -250,6 +250,38 @@ UGraph UGRAPHrandU (int V, int E) {
     return G;
 }
 
+UGraph UGRAPHgrid (int N) {
+    vertex v, V = N * N;
+    UGraph G = GRAPHinit (V);
+    for (v = 0; v < V; ++v) {
+        if (v > N)
+            GRAPHinsertArc (G, v, v - N);
+        if (v < V - N)
+            GRAPHinsertArc (G, v, v + N);
+        if (v % N > 0)
+            GRAPHinsertArc (G, v, v - 1);
+        if (v % N < N - 1)
+            GRAPHinsertArc (G, v, v + 1);
+    }
+    return G;
+}
+
+UGraph UGRAPHgridDiagonals (int N) {
+    vertex v, V = N * N;
+    UGraph G = UGRAPHgrid (N);
+    for (v = 0; v < V; ++v) {
+        if (v > N && v % N > 0)
+            GRAPHinsertArc (G, v, v - N - 1);
+        if (v > N && v % N < N - 1)
+            GRAPHinsertArc (G, v, v - N + 1);
+        if (v < V - N && v % N > 0)
+            GRAPHinsertArc (G, v, v + N - 1);
+        if (v < V - N && v % N < N - 1)
+            GRAPHinsertArc (G, v, v + N + 1);
+    }
+    return G;
+}
+
 /* REPRESENTAÇÃO POR LISTAS DE ADJACÊNCIA: A função GRAPHinsertArc() insere um
    arco v-w no grafo G. A função supõe que v e w são distintos, positivos e
    menores que G->V. Se o grafo já tem um arco v-w, a função não faz nada. */
@@ -376,28 +408,28 @@ void GRAPHbfs (Graph G, vertex s) {
    mínimos. Esta versão da função supõe que o grafo G é representado por listas
    de adjacência.  (Código inspirado no programa 18.9 de Sedgewick.) */
 void GRAPHminPaths (Graph G, vertex s, int *pred, int *dist) {
-   const int INFINITY = G->V;
-   vertex v, w; link a; Queue Q;
-   for (v = 0; v < G->V; ++v)
-      pred[v] = -1, dist[v] = INFINITY;
-   Q = QUEUEinit (G->V);
-   dist[s] = 0;
-   pred[s] = s;
-   QUEUEput (Q, s);
+    const int INFINITY = G->V;
+    vertex v, w; link a; Queue Q;
+    for (v = 0; v < G->V; ++v)
+        pred[v] = -1, dist[v] = INFINITY;
+    Q = QUEUEinit (G->V);
+    dist[s] = 0;
+    pred[s] = s;
+    QUEUEput (Q, s);
 
-   while (!QUEUEempty (Q)) {
-       v = QUEUEget (Q);
-       for (a = G->adj[v]; a != NULL; a = a->next) {
-           w = a->w;
-           if (pred[w] == -1) {
-               pred[w] = v;
-               dist[w] = dist[v] + 1;
-               QUEUEput (Q, w);
-           }
-       }
-   }
+    while (!QUEUEempty (Q)) {
+        v = QUEUEget (Q);
+        for (a = G->adj[v]; a != NULL; a = a->next) {
+            w = a->w;
+            if (pred[w] == -1) {
+                pred[w] = v;
+                dist[w] = dist[v] + 1;
+                QUEUEput (Q, w);
+            }
+        }
+    }
 
-   QUEUEfree (Q);
+    QUEUEfree (Q);
 }
 
 void GRAPHtopoOrder (Graph G, int *vv) {
@@ -652,12 +684,12 @@ int GRAPHscT (Graph G, int *sc) {
 
 /* Atribui o rótulo k a todo vértice w ao alcance de v que ainda não foi
    rotulado. Os rótulos são armazenados no vetor sc[]. */
-static void dfsRsc( Graph G, vertex v, int *sc, int k) {
+static void dfsRsc (Graph G, vertex v, int *sc, int k) {
     link a;
     sc[v] = k;
     for (a = G->adj[v]; a != NULL; a = a->next)
         if (sc[a->w] == -1)
-            dfsRsc( G, a->w, sc, k);
+            dfsRsc (G, a->w, sc, k);
 }
 
 /* Esta função atribui um rótulo sc[v] (os rótulos são 0,1,2,...) a cada vértice
@@ -694,6 +726,26 @@ int GRAPHscK (Graph G, int *sc) {
     freeDfs (GR);
     GRAPHfree (GR);
     free (vv);
+    return k;
+}
+
+int UGRAPHsequentialColoring (UGraph G, int *color) { 
+    vertex v;
+    link a;
+    int i, k = 0;
+    int *disponivel = malloc (sizeof color);
+    for (v = 0; v < G->V; ++v) color[v] = -1;
+    for (v = 0; v < G->V; ++v) {
+        for (i = 0; i < k; ++i) disponivel[i] = 1;
+        for (a = G->adj[v]; a != NULL; a = a->next) {
+            i = color[a->w];
+            if (i != -1) disponivel[i] = 0;
+        }
+        for (i = 0; i < k; ++i) 
+            if (disponivel[i] == 1) break;
+        if (i < k) color[v] = i;
+        else color[v] = k++;
+    }
     return k;
 }
 
@@ -825,6 +877,40 @@ bool UGRAPHisConnected (UGraph G) {
 
     freeDfs (G);
     return ans;
+}
+
+static bool dfsRcolor (UGraph G, vertex v, int *color, int c) { 
+    link a; 
+    color[v] = c;
+    for (a = G->adj[v]; a != NULL; a = a->next) {
+        vertex w = a->w; 
+        if (color[w] == -1) {
+            if (dfsRcolor (G, w, color, 1-c) == false) 
+                return false; 
+        }
+        else { /* v-w é arco de retorno */
+            if (color[w] == c) /* base da recursão */
+                return false;
+        }
+    }
+    return true;
+}
+
+/* Esta função decide se o grafo não-dirigido G admite bipartição. Em caso 
+   afirmativo, a função atribui uma cor, 0 ou 1, a cada vértice de G de tal 
+   forma que toda aresta tenha pontas de cores diferentes. As cores dos vértices
+   são armazenadas no vetor color[] indexado pelos vértices. (Esta função supõe 
+   que G é representado por listas de adjacência. 
+   Código inspirado no programa 18.6 de Sedgewick.) */
+bool UGRAPHtwoColor (UGraph G, int *color) { 
+    vertex v;
+    for (v = 0; v < G->V; ++v) 
+        color[v] = -1; /* incolor */
+    for (v = 0; v < G->V; ++v)
+        if (color[v] == -1) /* começa nova etapa */
+            if (dfsRcolor (G, v, color, 0) == false) 
+                return false;
+    return true;
 }
 
 void GRAPHshow (Graph G) {

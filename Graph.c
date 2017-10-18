@@ -46,12 +46,17 @@ char *func_names[] = {
     "vertices",
     "arcs",
     "ccBfs",
+    "grid",
+    "gridDiagonals",
+    "reverse",
+    "sequentialColoring",
+    "twoColor",
     "quit",
     NULL
 };
 
 int main () {
-    Graph G = GRAPHinit (1);
+    Graph GR, G = GRAPHinit (1);
     Stack S;
     FILE * in, * out;
     vertex v, w;
@@ -451,6 +456,57 @@ int main () {
             break;
 
         case 42:
+            printf ("UGraph UGRAPHgrid (int N)\n");
+            GRAPHfree (G);
+            scanf (" %d", &V);
+            G = UGRAPHgrid (V);
+            V = GRAPHvertices (G);
+            A = GRAPHarcs (G);
+            break;
+
+        case 43:
+            printf ("UGraph UGRAPHgridDiagonals (int N)\n");
+            GRAPHfree (G);
+            scanf (" %d", &V);
+            G = UGRAPHgridDiagonals (V);
+            V = GRAPHvertices (G);
+            A = GRAPHarcs (G);
+            break;
+
+        case 44:
+            printf ("Graph GRAPHreverse (Graph G)\n");
+            GR = GRAPHreverse (G);
+            GRAPHfree (G);
+            G = GR;
+            V = GRAPHvertices (G);
+            A = GRAPHarcs (G);
+            break;
+
+        case 45:
+            printf ("int UGRAPHsequentialColoring (UGraph G, int *color)\n");
+            arr = malloc (V * sizeof (int));
+            printf ("colors: %2d\n", UGRAPHsequentialColoring (G, arr));
+            printf ("v           ");
+            for (i = 0; i < V; ++i) printf ("%2d%c", i, (i == V - 1) ? '\n' : ' ');
+            printf ("color       ");
+            for (i = 0; i < V; ++i) printf ("%2d%c", arr[i], (i == V - 1) ? '\n' : ' ');
+            free (arr);
+            break;
+
+        case 46:
+            printf ("bool UGRAPHtwoColor (UGraph G, int *color)\n");
+            arr = malloc (V * sizeof (int));
+            if (UGRAPHtwoColor (G, arr)) {
+                printf ("v           ");
+                for (i = 0; i < V; ++i) printf ("%2d%c", i, (i == V - 1) ? '\n' : ' ');
+                printf ("color       ");
+                for (i = 0; i < V; ++i) printf ("%2d%c", arr[i], (i == V - 1) ? '\n' : ' ');
+            }
+            else printf ("No\n");
+            free (arr);
+            break;
+
+        case 47:
             jump = true;
         }
     }

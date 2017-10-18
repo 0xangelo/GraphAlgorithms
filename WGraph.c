@@ -29,7 +29,7 @@ char *func_names[] = {
 };
 
 int main () {
-    Graph G = GRAPHinit (1);
+    Graph GR, G = GRAPHinit (1);
     FILE * in, * out;
     vertex *parent, *dist;
     vertex v, w;
@@ -279,7 +279,9 @@ int main () {
 
         case 19:
             printf ("Graph GRAPHreverse (Graph G)\n");
-            G = GRAPHreverse (G);
+            GR = GRAPHreverse (G);
+            GRAPHfree (G);
+            G = GR;
             V = GRAPHvertices (G);
             A = GRAPHarcs (G);
             break;

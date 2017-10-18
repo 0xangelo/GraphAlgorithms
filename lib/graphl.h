@@ -29,6 +29,8 @@ Graph GRAPHrand1 (int V, int A);
 Graph GRAPHrand2 (int V, int A);
 Graph GRAPHreverse (Graph G);
 UGraph UGRAPHrandU (int V, int E);
+UGraph UGRAPHgrid (int N);
+UGraph UGRAPHgridDiagonals (int N);
 
 void GRAPHinsertArc (Graph G, vertex v, vertex w); 
 void UGRAPHinsertArc (Graph G, vertex v, vertex w);
@@ -51,6 +53,8 @@ int UGRAPHccBfs (UGraph G, int *cc);
 int UGRAPHccAdd (UGraph G, int *cc, vertex v, vertex w);
 int GRAPHscT (Graph G, int *sc);
 int GRAPHscK (Graph G, int *sc);
+int UGRAPHsequentialColoring (UGraph G, int *color);
+
 bool GRAPHisUndirected (Graph G);
 bool GRAPHisolated (Graph G, vertex v);
 bool GRAPHadj (Graph G, vertex v, vertex w);
@@ -59,6 +63,7 @@ bool GRAPHisTopoOrder (Graph G, vertex *vv);
 bool GRAPHreach (Graph G, vertex s, vertex t);
 bool GRAPHhasCycle (Graph G);
 bool UGRAPHisConnected (UGraph G);
+bool UGRAPHtwoColor (UGraph G, int *color);
 
 void GRAPHshow (Graph G); 
 void UGRAPHshowKnight (Graph G, int i, int j);
