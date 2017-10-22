@@ -39,9 +39,9 @@ int PQsize (PriorityQueue Q) {
 }
 
 static void swim (PriorityQueue Q, int k, int *dist) {
-    while (k > 1 && more (Q, k/2, k, dist)) {
-        swap (Q, k/2, k);
-        k = k/2;
+    while (k > 1 && more (Q, k >> 1, k, dist)) {
+        swap (Q, k >> 1, k);
+        k >>= 1;
     }
 }
 
@@ -53,8 +53,8 @@ void PQinsert (PriorityQueue Q, vertex v, int *dist) {
 
 static void sink (PriorityQueue Q, int k, int *dist) {
     int j;
-    while (2*k <= Q->N) {
-        j = 2*k;
+    while (k << 1 <= Q->N) {
+        j = k << 1;
         if (j < Q->N && more (Q, j, j+1, dist)) j++;
         if (!more (Q, k, j, dist)) break;
         swap (Q, k, j);
