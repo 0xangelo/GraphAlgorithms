@@ -1,5 +1,5 @@
-#ifndef _GRAPHLISTS_H
-#define _GRAPHLISTS_H
+#ifndef _GRAPHMATRIX_H
+#define _GRAPHMATRIX_H
 
 #include <stdio.h>
 #include <stdlib.h>
