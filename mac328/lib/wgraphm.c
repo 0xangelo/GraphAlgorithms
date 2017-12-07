@@ -332,7 +332,6 @@ int GRAPHdistSet (Graph G, bool *S, bool *T) {
 }
 
 arc GRAPHcriticalArc (Graph G, vertex s, vertex t) {
-    Graph GR = GRAPHreverse (G);
     vertex v, w, x, y;
     int *parent = malloc (G->V * sizeof (vertex));
     int *dist = malloc (G->V * sizeof (vertex));
@@ -342,9 +341,9 @@ arc GRAPHcriticalArc (Graph G, vertex s, vertex t) {
 
     for (w = t; w != parent[w]; w = parent[w]) {
         min_cst = INFINITY;
-        for (v = 0; v < GR->V; ++v) 
-            if (GR->adj[w][v] != INFINITY) {
-                cst = GR->adj[w][v];
+        for (v = 0; v < G->V; ++v) 
+            if (G->adj[v][w] != INFINITY) {
+                cst = G->adj[v][w];
                 if (v == parent[w]) continue;
                 red_cst = (dist[v] == INFINITY) ? INFINITY : dist[v] + cst - dist[w];
                 if (red_cst < min_cst) min_cst = red_cst;
@@ -352,7 +351,6 @@ arc GRAPHcriticalArc (Graph G, vertex s, vertex t) {
         if (min_cst > max_cst) max_cst = min_cst, x = parent[w], y = w;
     }
 
-    GRAPHfree (GR);
     free (parent);
     free (dist);
     return ARC (x, y, dist[y] - dist[x]);

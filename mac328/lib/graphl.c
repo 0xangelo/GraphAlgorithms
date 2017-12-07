@@ -871,6 +871,23 @@ int UGRAPHbipartiteMatching (UGraph G, int *color, vertex *match, bool bfs) {
     return size;
 }
 
+int UGRAPHgeneralMatching (UGraph G, vertex *match) {
+    vertex v;
+    int *phi = malloc (G->V * sizeof int);
+    int *rho = malloc (G->V * sizeof int);
+    /* Inicializacao */
+    for (v = 0; v < G->V; ++v)
+        if (match[v] != 1)
+            phi[v] = rho[v] = -1;
+        else {
+            phi[v] = rho[v] = v;
+            /* inclui as arestas que saem de v numa fila */
+        }
+    /* Inicializa A = empty */
+    
+    return 0;
+}
+
 bool GRAPHisUndirected (Graph G) {
     int i, w;
     link a, b;

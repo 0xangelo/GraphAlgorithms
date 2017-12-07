@@ -63,3 +63,6 @@ bin/
 in
 input.txt
 output.txt
+
+# Mac
+.DS_Store
